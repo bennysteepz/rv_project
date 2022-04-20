@@ -11,6 +11,8 @@ import org.apache.maven.project.MavenProject;
 import java.io.File; // Import the File class
 import java.io.FileNotFoundException;  // Import this class to handle errors
 import java.util.Scanner; // Import the Scanner class to read text files
+import java.util.List;
+import java.util.ArrayList;
 
 @Mojo(name = "updateMETA")
 public class fileMojo extends AbstractMojo {
@@ -20,33 +22,37 @@ public class fileMojo extends AbstractMojo {
     @Override
     public void execute() throws MojoExecutionException, MojoFailureException {
 
-        GetYo myObj = new GetYo();
+        getLog().info("Executing updateMETA Goal...");
 
-        getLog().info("hello world, this is my maven plug!!!");
-        getLog().info(myObj.returnYo());
-    }
-
-    public class GetYo {
-        public String returnYo() {
-            return "Yo";
+        // create instance of ReadFile class called myFile (type is a .txt file)
+        ReadFile myFile = new ReadFile();
+        // get lines of myFile (type is a .txt file)
+        List<String> allLines = myFile.getLines();
+        // loop through each line of .txt file
+        for (int i = 0; i < allLines.size(); i++) {
+            getLog().info(allLines.get(i));
         }
     }
 
     public class ReadFile {
-        public void main(String[] args) {
+
+        public List<String> getLines() {
+            List<String> fileLines = new ArrayList<>();
+
             try {
                 File myObj = new File("test.txt");
                 Scanner myReader = new Scanner(myObj);
                 while (myReader.hasNextLine()) {
                     String data = myReader.nextLine();
-                    System.out.println(data);
-                    getLog().info("in while loop");
+//                    System.out.println(data);
+                    fileLines.add(data);
                 }
                 myReader.close();
             } catch (FileNotFoundException e) {
-                System.out.println("An error occurred.");
+                System.out.println("An error occurred, FileNotFoundException");
                 e.printStackTrace();
             }
+            return fileLines;
         }
     }
 }
