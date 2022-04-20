@@ -19,3 +19,5 @@ public class GitVersionMojo extends AbstractMojo {
         getLog().info("hello world, this is my maven plugin!");
     }
 }
+
+
