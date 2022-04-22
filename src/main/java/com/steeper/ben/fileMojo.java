@@ -35,9 +35,12 @@ public class fileMojo extends AbstractMojo {
         getLog().info("Agent Jar Path: " + agentJarPath);
 
         // Create instance of txtFile class called txtFile (type .txt file)
-        String txtFilePath = agentJarPath + "/specs2ignore.txt";
         TxtFile txtFile = new TxtFile();
-        txtFile.createTxtFile(agentJarPath);
+        String txtFileName = "specs2ignore.txt";
+        // Creates txt file in root directory of client plugin (where POM file is)
+        txtFile.createTxtFile(txtFileName);
+        txtFile.writeToTxtFile(txtFileName, "this is an example line");
+        txtFile.writeToTxtFile(txtFileName, "this is another example line");
 
         // Get lines of txtFile (type is a .txt file)
 //        List<String> allLines = txtFile.getLines();
@@ -115,10 +118,10 @@ public class fileMojo extends AbstractMojo {
         }
 
         // Write to text file
-        public void writeToTxtFile(String filePath) {
+        public void writeToTxtFile(String filePath, String content) {
             try {
                 FileWriter myWriter = new FileWriter(filePath);
-                myWriter.write("Files in Java might be tricky, but it is fun enough!");
+                myWriter.write(content);
                 myWriter.close();
                 System.out.println("Successfully wrote to the file.");
             } catch (IOException e) {
