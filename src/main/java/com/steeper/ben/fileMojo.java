@@ -268,6 +268,7 @@ public class fileMojo extends AbstractMojo {
         }
     }
 
+    // reference: https://mkyong.com/java/how-to-create-xml-file-in-java-dom/
     public class WriteXmlDom1 {
 
         public void createXML()
@@ -282,8 +283,12 @@ public class fileMojo extends AbstractMojo {
             doc.appendChild(rootElement);
 
             Element aspectsElement = doc.createElement("aspects");
-            doc.appendChild(rootElement);
-//            rootElement.appendChild(aspectsElement);
+            rootElement.appendChild(aspectsElement);
+
+            // repeat for every aspect
+            Element aspectElement = doc.createElement("aspect");
+            aspectsElement.appendChild(aspectElement);
+            aspectElement.setAttribute("name","mop.ShutdownHook_UnsafeAWTCallMonitorAspect");
 
             //...create XML elements, and others...
 
