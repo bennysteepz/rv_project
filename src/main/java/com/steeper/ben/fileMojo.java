@@ -6,13 +6,27 @@ import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.project.MavenProject;
-import java.io.File; // Import the File class
+import java.io.File;
 import java.io.FileWriter;
-import java.io.FileNotFoundException;  // Import this class to handle errors
+import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.util.Scanner; // Import the Scanner class to read text files
+import java.io.InputStream;
+import java.util.Scanner;
 import java.util.List;
 import java.util.ArrayList;
+import org.w3c.dom.*;
+import org.xml.sax.SAXException;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.OutputKeys;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerException;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
+import javax.xml.transform.stream.StreamSource;
+import java.io.*;
 
 @Mojo(name = "updateMETA")
 public class fileMojo extends AbstractMojo {
@@ -34,9 +48,11 @@ public class fileMojo extends AbstractMojo {
         getLog().info("Executing updateMETA Goal...");
         getLog().info("Agent Jar Path: " + agentJarPath);
 
+        // Path Variables
+        String txtFilePath = "specs2ignore.txt";
+
         // Create instance of txtFile class called txtFile (type .txt file)
         TxtFile txtFile = new TxtFile();
-        String txtFilePath = "specs2ignore.txt";
         // Creates txt file in root directory of client plugin (where POM file is)
         txtFile.createTxtFile(txtFilePath);
         // Writes the output of generalContent() to the newly created text file
@@ -51,12 +67,14 @@ public class fileMojo extends AbstractMojo {
 
         // Create JarWork class to start working with Jar
 //        JarWork agentJar = new JarWork();
-        // Try extracting the agent jar file
+        // Extract the agent jar file
 //        try {
-//            agentJar.ExtractJar();
+//            agentJar.ExtractJar(agentJarPath);
 //        } catch (IOException e) {
 //            e.printStackTrace();
 //        }
+
+        ModifyXmlDomParser xmlParser = new ModifyXmlDomParser();
     }
 
     public class JarWork {
@@ -64,12 +82,13 @@ public class fileMojo extends AbstractMojo {
         public void main(String[] args) throws java.io.IOException {
             getLog().info("New JarWork class running...");
         }
-        public void ExtractJar() throws java.io.IOException {
+
+        public void ExtractJar(String filePath) throws java.io.IOException {
             getLog().info("Extracting Jar...");
-            java.util.jar.JarFile jarfile = new java.util.jar.JarFile(new java.io.File(agentJarPath + "/JavaMOPAgent.jar")); //jar file path(here sqljdbc4.jar)
+            java.util.jar.JarFile jarfile = new java.util.jar.JarFile(new java.io.File(filePath + "/JavaMOPAgent.jar")); //jar file path(here sqljdbc4.jar)
             java.util.Enumeration<java.util.jar.JarEntry> enu = jarfile.entries();
             while (enu.hasMoreElements()) {
-                String destdir = agentJarPath;    // destination directory
+                String destdir = filePath;    // destination directory
                 java.util.jar.JarEntry je = enu.nextElement();
 
                 System.out.println(je.getName());
@@ -93,12 +112,13 @@ public class fileMojo extends AbstractMojo {
         }
     }
 
-
+    // Class with various methods to work with text files
     public class TxtFile {
 
         public void main(String[] args) throws java.io.IOException {
             getLog().info("FileWork class running...");
         }
+
         public void createTxtFile(String filePath) {
             try {
                 getLog().info("INside create text file method..filePath:");
@@ -114,6 +134,7 @@ public class fileMojo extends AbstractMojo {
                 e.printStackTrace();
             }
         }
+
         // Write to text file
         // filePath: path to text file, content: List of strings for each line
         public void writeToTxtFile(String filePath, List<String> content) {
@@ -134,6 +155,7 @@ public class fileMojo extends AbstractMojo {
                 e.printStackTrace();
             }
         }
+
         // Generates and returns the list of specs to ignore for the text file
         public List<String> generateContent() {
             List<String> content = new ArrayList<>();
@@ -141,6 +163,7 @@ public class fileMojo extends AbstractMojo {
             content.add("mop.SortedSet_ComparableMonitorAspect\n");
             return content;
         }
+
         // Takes in the path to a text file and returns a
         // Sting List with each element being one line of the txt file
         public List<String> readLines(String filePath) {
@@ -160,6 +183,51 @@ public class fileMojo extends AbstractMojo {
                 e.printStackTrace();
             }
             return fileLines;
+        }
+    }
+
+    // Modify XML file
+    // referenced from:
+    // https://mkyong.com/java/how-to-modify-xml-file-in-java-dom-parser/
+    public class ModifyXmlDomParser {
+
+        private final String FILENAME = (agentJarPath + "/META-INF/aop-ajc.xml");
+        // xslt for pretty print only, no special task
+//        private static final String FORMAT_XSLT = "src/main/resources/xslt/staff-format.xslt";
+
+        public void main(String[] args) {
+            getLog().info("in main inside modifyxmldomparser");
+            DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+
+            try (InputStream is = new FileInputStream(FILENAME)) {
+                DocumentBuilder db = dbf.newDocumentBuilder();
+
+                Document doc = db.parse(is);
+
+                NodeList abstractsTags = doc.getElementsByTagName("abstracts");
+                //System.out.println(listOfStaff.getLength()); // 2
+
+                for (int i = 0; i < abstractsTags.getLength(); i++) {
+                    getLog().info("inside abstracts tag loop");
+                    // get first (and probably only) abstracts tag
+                    Node abstractsTag = abstractsTags.item(i);
+                    NodeList childNodes = abstractsTag.getChildNodes();
+
+                    // remove all abstract tags from xml
+                    for (int j = 0; j < childNodes.getLength(); j++) {
+                        Node abstractTag = childNodes.item(j);
+                        abstractsTag.removeChild(abstractTag);
+                    }
+                }
+                try (FileOutputStream output =
+                             new FileOutputStream("modified.xml")) {
+//                    writeXml(doc, output);
+                    getLog().info("built new xml file");
+                }
+            } catch (ParserConfigurationException | SAXException
+                    | IOException e) {
+                e.printStackTrace();
+            }
         }
     }
 }
