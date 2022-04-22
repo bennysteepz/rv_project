@@ -37,7 +37,7 @@ public class fileMojo extends AbstractMojo {
         // Create instance of txtFile class called txtFile (type .txt file)
         String txtFilePath = agentJarPath + "/specs2ignore.txt";
         TxtFile txtFile = new TxtFile();
-        txtFile.createTxtFile(txtFilePath);
+        txtFile.createTxtFile(agentJarPath);
 
         // Get lines of txtFile (type is a .txt file)
 //        List<String> allLines = txtFile.getLines();
