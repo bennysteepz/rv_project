@@ -205,15 +205,15 @@ public class fileMojo extends AbstractMojo {
 
                 Document doc = db.parse(is);
 
-                NodeList abstractsTags = doc.getElementsByTagName("abstracts");
+                NodeList aspectsTags = doc.getElementsByTagName("aspects");
                 //System.out.println(AbstractsTags.getLength()); // 2
                 getLog().info("length of abstractstag:");
-                getLog().info(Integer.toString(abstractsTags.getLength()));
+                getLog().info(Integer.toString(aspectsTags.getLength()));
 
-                for (int i = 0; i < abstractsTags.getLength(); i++) {
+                for (int i = 0; i < aspectsTags.getLength(); i++) {
                     getLog().info("inside abstracts tag loop");
                     // get first (and probably only) abstracts tag
-                    Node abstractsTag = abstractsTags.item(i);
+                    Node abstractsTag = aspectsTags.item(i);
                     NodeList childNodes = abstractsTag.getChildNodes();
 
                     // remove all abstract tags from xml
