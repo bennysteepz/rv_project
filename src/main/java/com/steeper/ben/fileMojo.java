@@ -75,6 +75,7 @@ public class fileMojo extends AbstractMojo {
 //        }
 
         ModifyXmlDomParser xmlParser = new ModifyXmlDomParser();
+        xmlParser.modifyXml();
     }
 
     public class JarWork {
@@ -195,7 +196,7 @@ public class fileMojo extends AbstractMojo {
         // xslt for pretty print only, no special task
 //        private static final String FORMAT_XSLT = "src/main/resources/xslt/staff-format.xslt";
 
-        public void main(String[] args) {
+        public void modifyXml() {
             getLog().info("in main inside modifyxmldomparser");
             DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
 
