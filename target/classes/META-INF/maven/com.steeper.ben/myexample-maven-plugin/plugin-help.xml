@@ -56,7 +56,7 @@
         </parameter>
       </parameters>
       <configuration>
-        <agentJarPath implementation="java.lang.String" default-value="/../agents/JavaMOPAgent.jar">${agentJarPath}</agentJarPath>
+        <agentJarPath implementation="java.lang.String" default-value="/../agents">${agentJarPath}</agentJarPath>
         <txtFilePath implementation="java.lang.String" default-value="/../rv_project/test.txt">${txtFilePath}</txtFilePath>
       </configuration>
     </mojo>

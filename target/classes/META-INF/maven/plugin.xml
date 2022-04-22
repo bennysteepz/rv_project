@@ -76,7 +76,7 @@
         </parameter>
       </parameters>
       <configuration>
-        <agentJarPath implementation="java.lang.String" default-value="/../agents/JavaMOPAgent.jar">${agentJarPath}</agentJarPath>
+        <agentJarPath implementation="java.lang.String" default-value="/../agents">${agentJarPath}</agentJarPath>
         <project implementation="org.apache.maven.project.MavenProject">${project}</project>
         <txtFilePath implementation="java.lang.String" default-value="/../rv_project/test.txt">${txtFilePath}</txtFilePath>
       </configuration>
