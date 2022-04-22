@@ -55,7 +55,7 @@
       <threadSafe>false</threadSafe>
       <parameters>
         <parameter>
-          <name>agentJarPath</name>
+          <name>agentsPath</name>
           <type>java.lang.String</type>
           <required>false</required>
           <editable>true</editable>
@@ -68,10 +68,18 @@
           <editable>false</editable>
           <description></description>
         </parameter>
+        <parameter>
+          <name>specListPath</name>
+          <type>java.util.List</type>
+          <required>false</required>
+          <editable>true</editable>
+          <description></description>
+        </parameter>
       </parameters>
       <configuration>
-        <agentJarPath implementation="java.lang.String" default-value="">${agentJarPath}</agentJarPath>
+        <agentsPath implementation="java.lang.String" default-value="">${agentsPath}</agentsPath>
         <project implementation="org.apache.maven.project.MavenProject">${project}</project>
+        <specListPath implementation="java.util.List" default-value="">${specListPath}</specListPath>
       </configuration>
     </mojo>
     <mojo>

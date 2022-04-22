@@ -87,7 +87,6 @@ public class fileMojo extends AbstractMojo {
     }
 
     public class JarWork {
-
         public void main(String[] args) throws java.io.IOException {
             getLog().info("New JarWork class running...");
         }
