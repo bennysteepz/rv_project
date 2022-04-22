@@ -205,23 +205,22 @@ public class fileMojo extends AbstractMojo {
 
                 Document doc = db.parse(is);
 
-                NodeList aspectsTags = doc.getElementsByTagName("aspect");
+                NodeList aspectTags = doc.getElementsByTagName("aspect");
                 //System.out.println(AbstractsTags.getLength()); // 2
                 getLog().info("length of aspectstag:");
-                getLog().info(Integer.toString(aspectsTags.getLength()));
+                getLog().info(Integer.toString(aspectTags.getLength()));
 
-                for (int i = 0; i < aspectsTags.getLength(); i++) {
+                for (int i = 0; i < aspectTags.getLength(); i++) {
                     getLog().info("inside aspects tag loop");
-                    // get first (and probably only) abstracts tag
-                    Node abstractsTag = aspectsTags.item(i);
-                    NodeList childNodes = abstractsTag.getChildNodes();
+                    Node this_aspect = aspectTags.item(i);
+                    this_aspect.getParentNode().removeChild(this_aspect);
 
                     // remove all aspect tags from xml
-                    for (int j = 0; j < childNodes.getLength(); j++) {
-                        getLog().info("inside child node aspect looping");
-                        Node abstractTag = childNodes.item(j);
-                        abstractsTag.removeChild(abstractTag);
-                    }
+//                    for (int j = 0; j < childNodes.getLength(); j++) {
+//                        getLog().info("inside child node aspect looping");
+//                        Node abstractTag = childNodes.item(j);
+//                        abstractsTag.removeChild(abstractTag);
+//                    }
                 }
                 try (FileOutputStream output =
                              new FileOutputStream("modified.xml")) {
