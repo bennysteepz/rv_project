@@ -47,17 +47,9 @@
           <editable>true</editable>
           <description></description>
         </parameter>
-        <parameter>
-          <name>txtFilePath</name>
-          <type>java.lang.String</type>
-          <required>false</required>
-          <editable>true</editable>
-          <description></description>
-        </parameter>
       </parameters>
       <configuration>
-        <agentJarPath implementation="java.lang.String" default-value="/../agents">${agentJarPath}</agentJarPath>
-        <txtFilePath implementation="java.lang.String" default-value="/../rv_project/test.txt">${txtFilePath}</txtFilePath>
+        <agentJarPath implementation="java.lang.String" default-value="">${agentJarPath}</agentJarPath>
       </configuration>
     </mojo>
   </mojos>

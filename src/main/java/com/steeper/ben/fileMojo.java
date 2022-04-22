@@ -3,12 +3,11 @@ package com.steeper.ben;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
-import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.project.MavenProject;
-
 import java.io.File; // Import the File class
+import java.io.FileWriter;
 import java.io.FileNotFoundException;  // Import this class to handle errors
 import java.io.IOException;
 import java.util.Scanner; // Import the Scanner class to read text files
@@ -21,32 +20,34 @@ public class fileMojo extends AbstractMojo {
     private MavenProject project;
 
     // The path where you want the text file created
-    @Parameter(property = "txtFilePath", defaultValue = "/../rv_project/testttt.txt")
-    private String txtFilePath;
+//    @Parameter(property = "txtFilePath", defaultValue = "/../rv_project/testttt.txt")
+//    private String txtFilePath;
 
     // The path agent .jar file is located
     // extracted files and specs text file can also go here
-    @Parameter(property = "agentJarPath", defaultValue = "/../agentssss")
+    @Parameter(property = "agentJarPath", defaultValue = "")
     private String agentJarPath;
 
     @Override
     public void execute() throws MojoExecutionException, MojoFailureException {
 
         getLog().info("Executing updateMETA Goal...");
+        getLog().info("Agent Jar Path: " + agentJarPath);
 
-        // create instance of ReadFile class called myFile (type is a .txt file)
-        MyFile myFile = new MyFile();
-        // get lines of myFile (type is a .txt file)
-        List<String> allLines = myFile.getLines();
-        // loop through each line of .txt file
-        for (int i = 0; i < allLines.size(); i++) {
-            getLog().info(allLines.get(i));
-        }
-        getLog().info(agentJarPath);
-        getLog().info(txtFilePath);
+        // Create instance of txtFile class called txtFile (type .txt file)
+        String txtFilePath = agentJarPath + "/specs2ignore.txt";
+        TxtFile txtFile = new TxtFile();
+        txtFile.createTxtFile(txtFilePath);
+
+        // Get lines of txtFile (type is a .txt file)
+//        List<String> allLines = txtFile.getLines();
+//        // Loop through each line of .txt file
+//        for (int i = 0; i < allLines.size(); i++) {
+//            getLog().info(allLines.get(i));
+//        }
 
         // Create JarWork class to start working with Jar
-        JarWork agentJar = new JarWork();
+//        JarWork agentJar = new JarWork();
         // Try extracting the agent jar file
 //        try {
 //            agentJar.ExtractJar();
@@ -90,18 +91,18 @@ public class fileMojo extends AbstractMojo {
         }
     }
 
-    public class MyFile {
-        String path = "";
+
+    public class TxtFile {
 
         public void main(String[] args) throws java.io.IOException {
             getLog().info("FileWork class running...");
-            path = args[0];
-            createTxtFile(path);
         }
 
         public void createTxtFile(String filePath) {
             try {
-                File myObj = new File(filePath+"mytest.txt");
+                getLog().info("INside create text file method..filePath:");
+                getLog().info(filePath);
+                File myObj = new File(filePath);
                 if (myObj.createNewFile()) {
                     System.out.println("File created: " + myObj.getName());
                 } else {
@@ -113,8 +114,21 @@ public class fileMojo extends AbstractMojo {
             }
         }
 
-        // Takes in the path to a text file and stores each line
-        // of the text file in fileLines
+        // Write to text file
+        public void writeToTxtFile(String filePath) {
+            try {
+                FileWriter myWriter = new FileWriter(filePath);
+                myWriter.write("Files in Java might be tricky, but it is fun enough!");
+                myWriter.close();
+                System.out.println("Successfully wrote to the file.");
+            } catch (IOException e) {
+                System.out.println("An error occurred.");
+                e.printStackTrace();
+            }
+        }
+
+        // Takes in the path to a text file and returns a
+        // Sting List with each element being one line of the txt file
         public List<String> getLines(String filePath) {
             List<String> fileLines = new ArrayList<>();
 
