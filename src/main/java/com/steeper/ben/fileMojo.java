@@ -53,10 +53,7 @@ public class fileMojo extends AbstractMojo {
 
         // Create instance of txtFile class called txtFile (type .txt file)
         TxtFile txtFile = new TxtFile();
-        // Creates txt file in root directory of client plugin (where POM file is)
-        txtFile.createTxtFile(txtFilePath);
-        // Writes the output of generalContent() to the newly created text file
-        txtFile.writeToTxtFile(txtFilePath, txtFile.generateContent());
+        // read from path2specs
 
         // Get lines of txtFile (type is a .txt file)
         List<String> allLines = txtFile.readLines(txtFilePath);
@@ -80,13 +77,13 @@ public class fileMojo extends AbstractMojo {
 
         // create xml from scratch
         WriteXmlDom1 makeXml = new WriteXmlDom1();
-        try {
-            makeXml.createXML();
-        } catch (ParserConfigurationException e) {
-            e.printStackTrace();
-        } catch (TransformerException e) {
-            e.printStackTrace();
-        }
+//        try {
+//            makeXml.createXML();
+//        } catch (ParserConfigurationException e) {
+//            e.printStackTrace();
+//        } catch (TransformerException e) {
+//            e.printStackTrace();
+//        }
     }
 
     public class JarWork {
@@ -271,7 +268,7 @@ public class fileMojo extends AbstractMojo {
     // reference: https://mkyong.com/java/how-to-create-xml-file-in-java-dom/
     public class WriteXmlDom1 {
 
-        public void createXML()
+        public void createXML(List<String> specs2include)
                 throws ParserConfigurationException, TransformerException {
 
             DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
