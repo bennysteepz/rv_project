@@ -282,7 +282,8 @@ public class fileMojo extends AbstractMojo {
             doc.appendChild(rootElement);
 
             Element aspectsElement = doc.createElement("aspects");
-            rootElement.appendChild(aspectsElement);
+            doc.appendChild(rootElement);
+//            rootElement.appendChild(aspectsElement);
 
             //...create XML elements, and others...
 
