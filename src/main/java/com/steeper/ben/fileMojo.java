@@ -36,18 +36,18 @@ public class fileMojo extends AbstractMojo {
 
         // Create instance of txtFile class called txtFile (type .txt file)
         TxtFile txtFile = new TxtFile();
-        String txtFileName = "specs2ignore.txt";
+        String txtFilePath = "specs2ignore.txt";
         // Creates txt file in root directory of client plugin (where POM file is)
-        txtFile.createTxtFile(txtFileName);
-        txtFile.writeToTxtFile(txtFileName, "this is an example line");
-//        txtFile.writeToTxtFile(txtFileName, "this is another example line");
+        txtFile.createTxtFile(txtFilePath);
+        // Writes the output of generalContent() to the newly created text file
+        txtFile.writeToTxtFile(txtFilePath, txtFile.generateContent());
 
         // Get lines of txtFile (type is a .txt file)
-//        List<String> allLines = txtFile.getLines();
-//        // Loop through each line of .txt file
-//        for (int i = 0; i < allLines.size(); i++) {
-//            getLog().info(allLines.get(i));
-//        }
+        List<String> allLines = txtFile.readLines(txtFilePath);
+        // Loop through each line of .txt file
+        for (int i = 0; i < allLines.size(); i++) {
+            getLog().info(allLines.get(i));
+        }
 
         // Create JarWork class to start working with Jar
 //        JarWork agentJar = new JarWork();
@@ -64,7 +64,6 @@ public class fileMojo extends AbstractMojo {
         public void main(String[] args) throws java.io.IOException {
             getLog().info("New JarWork class running...");
         }
-
         public void ExtractJar() throws java.io.IOException {
             getLog().info("Extracting Jar...");
             java.util.jar.JarFile jarfile = new java.util.jar.JarFile(new java.io.File(agentJarPath + "/JavaMOPAgent.jar")); //jar file path(here sqljdbc4.jar)
@@ -100,7 +99,6 @@ public class fileMojo extends AbstractMojo {
         public void main(String[] args) throws java.io.IOException {
             getLog().info("FileWork class running...");
         }
-
         public void createTxtFile(String filePath) {
             try {
                 getLog().info("INside create text file method..filePath:");
@@ -116,15 +114,19 @@ public class fileMojo extends AbstractMojo {
                 e.printStackTrace();
             }
         }
-
         // Write to text file
-        public void writeToTxtFile(String filePath, String content) {
+        // filePath: path to text file, content: List of strings for each line
+        public void writeToTxtFile(String filePath, List<String> content) {
             try {
                 getLog().info("inside write method...");
                 getLog().info(filePath);
-                getLog().info(content);
                 FileWriter myWriter = new FileWriter(filePath);
-                myWriter.write(content);
+
+                for (int i = 0; i < content.size(); i++) {
+                    String this_line = content.get(i);
+                    getLog().info(this_line);
+                    myWriter.write(this_line);
+                }
                 myWriter.close();
                 System.out.println("Successfully wrote to the file.");
             } catch (IOException e) {
@@ -132,10 +134,16 @@ public class fileMojo extends AbstractMojo {
                 e.printStackTrace();
             }
         }
-
+        // Generates and returns the list of specs to ignore for the text file
+        public List<String> generateContent() {
+            List<String> content = new ArrayList<>();
+            content.add("mop.Collections_SynchronizedCollectionMonitorAspect");
+            content.add("mop.SortedSet_ComparableMonitorAspect");
+            return content;
+        }
         // Takes in the path to a text file and returns a
         // Sting List with each element being one line of the txt file
-        public List<String> getLines(String filePath) {
+        public List<String> readLines(String filePath) {
             List<String> fileLines = new ArrayList<>();
 
             try {
