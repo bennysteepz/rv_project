@@ -206,7 +206,9 @@ public class fileMojo extends AbstractMojo {
                 Document doc = db.parse(is);
 
                 NodeList abstractsTags = doc.getElementsByTagName("abstracts");
-                //System.out.println(listOfStaff.getLength()); // 2
+                //System.out.println(AbstractsTags.getLength()); // 2
+                getLog().info("length of abstractstag:");
+                getLog().info(abstractsTags.getLength());
 
                 for (int i = 0; i < abstractsTags.getLength(); i++) {
                     getLog().info("inside abstracts tag loop");
