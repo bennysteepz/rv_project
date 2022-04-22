@@ -19,6 +19,12 @@ public class fileMojo extends AbstractMojo {
     @Parameter(property = "project", readonly = true)
     private MavenProject project;
 
+    @Parameter(property = "txtFilePath", defaultValue = "/../rv_project/test.txt")
+    private String txtFilePath;
+
+    @Parameter(property = "agentJarPath", defaultValue = "/../agents/JavaMOPAgent.jar")
+    private String agentJarPath;
+
     @Override
     public void execute() throws MojoExecutionException, MojoFailureException {
 
@@ -32,6 +38,8 @@ public class fileMojo extends AbstractMojo {
         for (int i = 0; i < allLines.size(); i++) {
             getLog().info(allLines.get(i));
         }
+        getLog().info(agentJarPath);
+        getLog().info(txtFilePath);
     }
 
     public class ReadFile {

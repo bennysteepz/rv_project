@@ -39,7 +39,26 @@
       <instantiationStrategy>per-lookup</instantiationStrategy>
       <executionStrategy>once-per-session</executionStrategy>
       <threadSafe>false</threadSafe>
-      <parameters/>
+      <parameters>
+        <parameter>
+          <name>agentJarPath</name>
+          <type>java.lang.String</type>
+          <required>false</required>
+          <editable>true</editable>
+          <description></description>
+        </parameter>
+        <parameter>
+          <name>txtFilePath</name>
+          <type>java.lang.String</type>
+          <required>false</required>
+          <editable>true</editable>
+          <description></description>
+        </parameter>
+      </parameters>
+      <configuration>
+        <agentJarPath implementation="java.lang.String" default-value="/../agents/JavaMOPAgent.jar">${agentJarPath}</agentJarPath>
+        <txtFilePath implementation="java.lang.String" default-value="/../rv_project/test.txt">${txtFilePath}</txtFilePath>
+      </configuration>
     </mojo>
   </mojos>
 </plugin>
