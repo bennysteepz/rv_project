@@ -20,10 +20,13 @@ public class fileMojo extends AbstractMojo {
     @Parameter(property = "project", readonly = true)
     private MavenProject project;
 
-    @Parameter(property = "txtFilePath", defaultValue = "/../rv_project/test.txt")
+    // The path where you want the text file created
+    @Parameter(property = "txtFilePath", defaultValue = "/../rv_project/testttt.txt")
     private String txtFilePath;
 
-    @Parameter(property = "agentJarPath", defaultValue = "/../agents")
+    // The path agent .jar file is located
+    // extracted files and specs text file can also go here
+    @Parameter(property = "agentJarPath", defaultValue = "/../agentssss")
     private String agentJarPath;
 
     @Override
@@ -32,7 +35,7 @@ public class fileMojo extends AbstractMojo {
         getLog().info("Executing updateMETA Goal...");
 
         // create instance of ReadFile class called myFile (type is a .txt file)
-        ReadFile myFile = new ReadFile();
+        MyFile myFile = new MyFile();
         // get lines of myFile (type is a .txt file)
         List<String> allLines = myFile.getLines();
         // loop through each line of .txt file
@@ -45,17 +48,17 @@ public class fileMojo extends AbstractMojo {
         // Create JarWork class to start working with Jar
         JarWork agentJar = new JarWork();
         // Try extracting the agent jar file
-        try {
-            agentJar.ExtractJar();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+//        try {
+//            agentJar.ExtractJar();
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
     }
 
     public class JarWork {
 
         public void main(String[] args) throws java.io.IOException {
-            getLog().info("New JarWork class created...");
+            getLog().info("New JarWork class running...");
         }
 
         public void ExtractJar() throws java.io.IOException {
@@ -87,13 +90,36 @@ public class fileMojo extends AbstractMojo {
         }
     }
 
-    public class ReadFile {
+    public class MyFile {
+        String path = "";
 
-        public List<String> getLines() {
+        public void main(String[] args) throws java.io.IOException {
+            getLog().info("FileWork class running...");
+            path = args[0];
+            createTxtFile(path);
+        }
+
+        public void createTxtFile(String filePath) {
+            try {
+                File myObj = new File(filePath+"mytest.txt");
+                if (myObj.createNewFile()) {
+                    System.out.println("File created: " + myObj.getName());
+                } else {
+                    System.out.println("File already exists.");
+                }
+            } catch (IOException e) {
+                System.out.println("An error occurred.");
+                e.printStackTrace();
+            }
+        }
+
+        // Takes in the path to a text file and stores each line
+        // of the text file in fileLines
+        public List<String> getLines(String filePath) {
             List<String> fileLines = new ArrayList<>();
 
             try {
-                File myObj = new File("test.txt");
+                File myObj = new File(filePath);
                 Scanner myReader = new Scanner(myObj);
                 while (myReader.hasNextLine()) {
                     String data = myReader.nextLine();
