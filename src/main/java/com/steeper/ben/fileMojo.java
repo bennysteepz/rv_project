@@ -74,8 +74,19 @@ public class fileMojo extends AbstractMojo {
 //            e.printStackTrace();
 //        }
 
-        ModifyXmlDomParser xmlParser = new ModifyXmlDomParser();
-        xmlParser.modifyXml();
+        // modify xml
+//        ModifyXmlDomParser xmlParser = new ModifyXmlDomParser();
+//        xmlParser.modifyXml();
+
+        // create xml from scratch
+        WriteXmlDom1 makeXml = new WriteXmlDom1();
+        try {
+            makeXml.createXML();
+        } catch (ParserConfigurationException e) {
+            e.printStackTrace();
+        } catch (TransformerException e) {
+            e.printStackTrace();
+        }
     }
 
     public class JarWork {
@@ -254,6 +265,53 @@ public class fileMojo extends AbstractMojo {
             StreamResult result = new StreamResult(output);
 
             transformer.transform(source, result);
+        }
+    }
+
+    public class WriteXmlDom1 {
+
+        public void createXML()
+                throws ParserConfigurationException, TransformerException {
+
+            DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
+            DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
+
+            // root elements
+            Document doc = docBuilder.newDocument();
+            Element rootElement = doc.createElement("aspectj");
+            doc.appendChild(rootElement);
+
+            doc.createElement("aspects");
+            rootElement.appendChild(doc.createElement("aspects"));
+
+            //...create XML elements, and others...
+
+            // write dom document to a file
+            try (FileOutputStream output =
+                         new FileOutputStream("modified2.xml")) {
+                writeXml(doc, output);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+        }
+
+        // write doc to output stream
+        private void writeXml(Document doc,
+                                     OutputStream output)
+                throws TransformerException {
+
+            TransformerFactory transformerFactory = TransformerFactory.newInstance();
+            Transformer transformer = transformerFactory.newTransformer();
+
+            // pretty print XML
+            transformer.setOutputProperty(OutputKeys.INDENT, "yes");
+
+            DOMSource source = new DOMSource(doc);
+            StreamResult result = new StreamResult(output);
+
+            transformer.transform(source, result);
+
         }
     }
 }
