@@ -216,6 +216,7 @@ public class fileMojo extends AbstractMojo {
 
                     // remove all abstract tags from xml
                     for (int j = 0; j < childNodes.getLength(); j++) {
+                        getLog().info("inside child node aspect looping");
                         Node abstractTag = childNodes.item(j);
                         abstractsTag.removeChild(abstractTag);
                     }
