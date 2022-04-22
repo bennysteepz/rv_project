@@ -197,7 +197,7 @@ public class fileMojo extends AbstractMojo {
 //        private static final String FORMAT_XSLT = "src/main/resources/xslt/staff-format.xslt";
 
         public void modifyXml() {
-            getLog().info("in main inside modifyxmldomparser");
+            getLog().info("inside modifyxmldomparser");
             DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
 
             try (InputStream is = new FileInputStream(FILENAME)) {
@@ -222,13 +222,36 @@ public class fileMojo extends AbstractMojo {
                 }
                 try (FileOutputStream output =
                              new FileOutputStream("modified.xml")) {
-//                    writeXml(doc, output);
+                    writeXml(doc, output);
                     getLog().info("built new xml file");
                 }
-            } catch (ParserConfigurationException | SAXException
-                    | IOException e) {
+            } catch (ParserConfigurationException | SAXException | IOException | TransformerException e) {
                 e.printStackTrace();
             }
+        }
+        // write doc to output stream
+        private void writeXml(Document doc,
+                                     OutputStream output)
+                throws TransformerException, UnsupportedEncodingException {
+
+            TransformerFactory transformerFactory = TransformerFactory.newInstance();
+
+            // The default add many empty new line, not sure why?
+            // https://mkyong.com/java/pretty-print-xml-with-java-dom-and-xslt/
+             Transformer transformer = transformerFactory.newTransformer();
+
+            // add a xslt to remove the extra newlines
+//            Transformer transformer = transformerFactory.newTransformer(
+//                    new StreamSource(new File(FORMAT_XSLT)));
+
+            // pretty print
+            transformer.setOutputProperty(OutputKeys.INDENT, "yes");
+            transformer.setOutputProperty(OutputKeys.STANDALONE, "no");
+
+            DOMSource source = new DOMSource(doc);
+            StreamResult result = new StreamResult(output);
+
+            transformer.transform(source, result);
         }
     }
 }
