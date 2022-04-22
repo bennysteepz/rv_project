@@ -137,8 +137,8 @@ public class fileMojo extends AbstractMojo {
         // Generates and returns the list of specs to ignore for the text file
         public List<String> generateContent() {
             List<String> content = new ArrayList<>();
-            content.add("mop.Collections_SynchronizedCollectionMonitorAspect");
-            content.add("mop.SortedSet_ComparableMonitorAspect");
+            content.add("mop.Collections_SynchronizedCollectionMonitorAspect\n");
+            content.add("mop.SortedSet_ComparableMonitorAspect\n");
             return content;
         }
         // Takes in the path to a text file and returns a
