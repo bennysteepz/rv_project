@@ -205,7 +205,7 @@ public class fileMojo extends AbstractMojo {
 
                 Document doc = db.parse(is);
 
-                NodeList aspectsTags = doc.getElementsByTagName("aspectj");
+                NodeList aspectsTags = doc.getElementsByTagName("aspect");
                 //System.out.println(AbstractsTags.getLength()); // 2
                 getLog().info("length of aspectstag:");
                 getLog().info(Integer.toString(aspectsTags.getLength()));
