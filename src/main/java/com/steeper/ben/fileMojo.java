@@ -39,7 +39,7 @@ public class fileMojo extends AbstractMojo {
         String txtFileName = "specs2ignore.txt";
         // Creates txt file in root directory of client plugin (where POM file is)
         txtFile.createTxtFile(txtFileName);
-//        txtFile.writeToTxtFile(txtFileName, "this is an example line");
+        txtFile.writeToTxtFile(txtFileName, "this is an example line");
 //        txtFile.writeToTxtFile(txtFileName, "this is another example line");
 
         // Get lines of txtFile (type is a .txt file)
@@ -120,6 +120,9 @@ public class fileMojo extends AbstractMojo {
         // Write to text file
         public void writeToTxtFile(String filePath, String content) {
             try {
+                getLog().info("inside write method...");
+                getLog().info(filePath);
+                getLog().info(content);
                 FileWriter myWriter = new FileWriter(filePath);
                 myWriter.write(content);
                 myWriter.close();
