@@ -10,6 +10,15 @@ import org.apache.maven.project.MavenProject;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.jar.*;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Scanner;
+import java.util.List;
+import java.util.ArrayList;
 import java.util.ArrayList;
 
 @Mojo(name = "rebuildAgent", defaultPhase = LifecyclePhase.INITIALIZE)
@@ -40,7 +49,8 @@ public class rebuildAgentMojo extends AbstractMojo {
         JarWork jarWork = new JarWork();
         // try extracting Jar file
         try {
-            jarWork.extractJar(jarFilePath);
+            // jar path followed by destination path
+            jarWork.extractJar(jarFilePath, agentsPath);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -56,15 +66,16 @@ public class rebuildAgentMojo extends AbstractMojo {
             getLog().info("New JarWork class running...");
         }
         // Extracts jar located at filePath
+        // inputs filePath: path to .jar file, and destPath: path to destination folder
         // Referenced from:
         // https://stackoverflow.com/questions/1529611/how-to-write-a-java-program-which-can-extract-a-jar-file-and-store-its-data-in-s
-        public void extractJar(String filePath) throws java.io.IOException {
+        public void extractJar(String filePath, String destPath) throws java.io.IOException {
             getLog().info("Extracting Jar...");
             //jar file path
             java.util.jar.JarFile jarfile = new java.util.jar.JarFile(new java.io.File(filePath));
             java.util.Enumeration<java.util.jar.JarEntry> enu = jarfile.entries();
             while (enu.hasMoreElements()) {
-                String destdir = filePath;    // destination directory
+                String destdir = destPath;    // destination directory
                 java.util.jar.JarEntry je = enu.nextElement();
 
                 System.out.println(je.getName());
