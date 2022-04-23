@@ -57,22 +57,27 @@ public class rebuildAgentMojo extends AbstractMojo {
 
         // 1. EXTRACT JAR
         // Create new instance of JarWork class
-        JarWork jarWork = new JarWork();
-        // try extracting Jar file
-        try {
-            // jar path followed by destination path
-            jarWork.extractJar(jarFilePath, agentsPath);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+//        JarWork jarWork = new JarWork();
+//        // try extracting Jar file
+//        try {
+//            // jar path followed by destination path
+//            jarWork.extractJar(jarFilePath, agentsPath);
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
 
         // 2. CREATE specListAll.txt in my plugin root dir FROM aop-ajc.xml in agents
         // Read aop-ajc.xml file
         // Create new instance of XmlWork class
         XmlWork xmlWork = new XmlWork();
-        // store specs from xml tags in List<String> allSpecs
+        // Store specs from xml tags in List<String> allSpecs
         List<String> allSpecs = xmlWork.readXml(xmlFilePath);
-        // Create specListAll.txt
+        // Create specListAll.txt by looping through allSpecs
+        for (int i = 0; i < allSpecs.size(); i++) {
+            // Current spec
+            String thisSpec = allSpecs.get(i);
+            getLog().info("current spec: " + thisSpec);
+        }
         // Write aop-ajc.xml spec strings to specListAll.txt
 
 
@@ -189,7 +194,6 @@ public class rebuildAgentMojo extends AbstractMojo {
         public void main(String[] args) {
             getLog().info("XmlWork class running...");
         }
-
         public List<String> readXml(String filePath) {
             // Instantiate the Factory
             DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
@@ -203,15 +207,11 @@ public class rebuildAgentMojo extends AbstractMojo {
 
                 // parse XML file
                 DocumentBuilder db = dbf.newDocumentBuilder();
-
                 Document doc = db.parse(new File(filePath));
 
                 // optional, but recommended
                 // http://stackoverflow.com/questions/13786607/normalization-in-dom-parsing-with-java-how-does-it-work
                 doc.getDocumentElement().normalize();
-
-                getLog().info("Root Element :" + doc.getDocumentElement().getNodeName());
-                getLog().info("------");
 
                 // Get <aspect>
                 NodeList list = doc.getElementsByTagName("aspect");
@@ -224,27 +224,8 @@ public class rebuildAgentMojo extends AbstractMojo {
 
                         // Get <aspect>'s "name" attribute value (the spec)
                         String name = element.getAttribute("name");
-                        getLog().info("spec name: " + name);
                         // Add spec string to xmlContent variable
                         xmlContent.add(name + "\n");
-
-//                        // get text
-//                        String firstname = element.getElementsByTagName("firstname").item(0).getTextContent();
-//                        String lastname = element.getElementsByTagName("lastname").item(0).getTextContent();
-//                        String nickname = element.getElementsByTagName("nickname").item(0).getTextContent();
-//
-//                        NodeList salaryNodeList = element.getElementsByTagName("salary");
-//                        String salary = salaryNodeList.item(0).getTextContent();
-//
-//                        // get salary's attribute
-//                        String currency = salaryNodeList.item(0).getAttributes().getNamedItem("currency").getTextContent();
-//
-//                        System.out.println("Current Element :" + node.getNodeName());
-//                        System.out.println("Staff Id : " + id);
-//                        System.out.println("First Name : " + firstname);
-//                        System.out.println("Last Name : " + lastname);
-//                        System.out.println("Nick Name : " + nickname);
-//                        System.out.printf("Salary [Currency] : %,.2f [%s]%n%n", Float.parseFloat(salary), currency);
                     }
                 }
             } catch (ParserConfigurationException | SAXException | IOException e) {
