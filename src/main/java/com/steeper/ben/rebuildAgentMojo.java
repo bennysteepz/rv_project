@@ -56,7 +56,8 @@ public class rebuildAgentMojo extends AbstractMojo {
         String jarFilePath = agentsPath + "/JavaMOPAgent.jar";
         String xmlFilePath = agentsPath + "/META-INF/aop-ajc.xml";
         String txtAllSpecsFilePath = "allSpecs.txt"; // store in client plugin root directory
-        String METAFilePath = agentsPath + "/META-INF/";
+        String metaFilePath = agentsPath + "/META-INF/";
+        String manifestFilePath = agentsPath + "/META-INF/MANIFEST.MF";
 
         // INSTANTIATE CLASSES
         JarWork jarWork = new JarWork(); // contains methods for working with .jar files
@@ -103,7 +104,8 @@ public class rebuildAgentMojo extends AbstractMojo {
         // Create new jar in META-INF directory
         try {
             // createJar takes in path to jar and path to META-INF
-            jarWork.createJar(jarFilePath, METAFilePath);
+//            jarWork.createJar(jarFilePath, metaFilePath);
+            jarWork.getManifest(manifestFilePath);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -189,6 +191,25 @@ public class rebuildAgentMojo extends AbstractMojo {
                     }
                     target.closeEntry();
                 }
+            }
+        }
+        // reference:
+        // https://www.tabnine.com/code/java/methods/java.util.jar.Manifest/%3Cinit%3E?snippet=5ce707df2fd38000041486a4
+        // ^ to use existing manifest in META-INF instead of creating new default one (otherwise agent won't work)
+        // Takes in path to manifest file, returns MANIFEST file
+        public Manifest getManifest(String filePath) throws IOException {
+            File file = new File(filePath, JarFile.MANIFEST_NAME);
+            if (file.exists()) {
+                InputStream inputStream = new FileInputStream(file);
+                try {
+                    getLog().info("manifest found");
+                    return new Manifest(inputStream);
+                } finally {
+                    inputStream.close();
+                }
+            } else {
+                getLog().info("no manifest found");
+                return new Manifest(); // empty manifest
             }
         }
     }
