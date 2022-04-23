@@ -43,7 +43,7 @@ public class rebuildAgentMojo extends AbstractMojo {
     private String agentsPath;
 
     // specListPath: path to the .txt file listing specs to include
-    @Parameter(property = "specsPath", defaultValue = "")
+    @Parameter(property = "specsPath", defaultValue = "/src/main/resources/specs.txt")
     private String specsPath;
 
     @Override
@@ -53,7 +53,6 @@ public class rebuildAgentMojo extends AbstractMojo {
         // CREATE FILE PATH VARIABLES
         String jarFilePath = agentsPath + "/JavaMOPAgent.jar";
         String xmlFilePath = agentsPath + "/META-INF/aop-ajc.xml";
-        String txtSpecsFilePath = specsPath;
         String txtAllSpecsFilePath = "allSpecs.txt"; // store in client plugin root directory
 
         // INSTANTIATE CLASSES
@@ -62,7 +61,7 @@ public class rebuildAgentMojo extends AbstractMojo {
         TxtWork txtWork = new TxtWork(); // contains methods for working with .txt files
 
         // 1. EXTRACT JAR
-//        // try extracting Jar file
+        // try extracting Jar file
 //        try {
 //            // jar path followed by destination path
 //            jarWork.extractJar(jarFilePath, agentsPath);
@@ -73,13 +72,20 @@ public class rebuildAgentMojo extends AbstractMojo {
         // 2. CREATE specListAll.txt in client plugin root dir FROM aop-ajc.xml in agents
         // Read aop-ajc.xml file
         // Store specs from xml tags in List<String> allSpecs
-        List<String> allSpecs = xmlWork.readXml(xmlFilePath);
-        // Create allSpecs.txt and write allSpecs to it
-        txtWork.createTxtFile(txtAllSpecsFilePath);
-        // Write aop-ajc.xml spec strings to specListAll.txt
-        txtWork.writeTxtFile(txtAllSpecsFilePath, allSpecs);
+//        List<String> allSpecs = xmlWork.readXml(xmlFilePath);
+//        // Create allSpecs.txt and write allSpecs to it
+//        txtWork.createTxtFile(txtAllSpecsFilePath);
+//        // Write aop-ajc.xml spec strings to specListAll.txt
+//        txtWork.writeTxtFile(txtAllSpecsFilePath, allSpecs);
 
-
+        // 3. RECREATE XML file from specs.txt (located in my plugin's resources directory)
+        // ** specs.txt is given for now, but later it will be updated programatically **
+        // Read specs.txt and store lines in List<String> specsToInclude variable
+        List<String> specsToInclude = txtWork.getLines(specsPath);
+        for (int i = 0; i < specsToInclude.size(); i++) {
+            String this_line = specsToInclude.get(i);
+            getLog().info("specs to include: " + this_line);
+        }
     }
 
     // CLASSES
@@ -154,7 +160,6 @@ public class rebuildAgentMojo extends AbstractMojo {
 
                 for (int i = 0; i < content.size(); i++) {
                     String this_line = content.get(i);
-                    getLog().info(this_line);
                     myWriter.write(this_line);
                 }
                 myWriter.close();
@@ -173,7 +178,6 @@ public class rebuildAgentMojo extends AbstractMojo {
                 Scanner myReader = new Scanner(myObj);
                 while (myReader.hasNextLine()) {
                     String data = myReader.nextLine();
-//                    System.out.println(data);
                     fileLines.add(data);
                 }
                 myReader.close();

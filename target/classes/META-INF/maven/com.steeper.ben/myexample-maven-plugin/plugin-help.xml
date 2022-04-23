@@ -66,7 +66,7 @@
       <configuration>
         <agentsPath implementation="java.lang.String" default-value="">${agentsPath}</agentsPath>
         <project implementation="org.apache.maven.project.MavenProject">${project}</project>
-        <specsPath implementation="java.lang.String" default-value="">${specsPath}</specsPath>
+        <specsPath implementation="java.lang.String" default-value="/src/main/resources/specs.txt">${specsPath}</specsPath>
       </configuration>
     </mojo>
     <mojo>
