@@ -56,6 +56,7 @@ public class rebuildAgentMojo extends AbstractMojo {
         String jarFilePath = agentsPath + "/JavaMOPAgent.jar";
         String xmlFilePath = agentsPath + "/META-INF/aop-ajc.xml";
         String txtAllSpecsFilePath = "allSpecs.txt"; // store in client plugin root directory
+        String METAFilePath = agentsPath + "/META-INF";
 
         // INSTANTIATE CLASSES
         JarWork jarWork = new JarWork(); // contains methods for working with .jar files
@@ -85,15 +86,15 @@ public class rebuildAgentMojo extends AbstractMojo {
         // Read specs.txt and store lines in List<String> specsToInclude variable
         List<String> specsToInclude = txtWork.getLines(specsPath);
         // First remove old xml file to replace
-        xmlWork.deleteXml(xmlFilePath);
+//        xmlWork.deleteXml(xmlFilePath);
         // Try to create new XML file with specsToInclude
-//        try {
-//            xmlWork.createXML(xmlFilePath, specsToInclude);
-//        } catch (ParserConfigurationException e) {
-//            e.printStackTrace();
-//        } catch (TransformerException e) {
-//            e.printStackTrace();
-//        }
+        try {
+            xmlWork.createXML(METAFilePath, specsToInclude);
+        } catch (ParserConfigurationException e) {
+            e.printStackTrace();
+        } catch (TransformerException e) {
+            e.printStackTrace();
+        }
 
         // 4. REBUILD JAR and install it
 
