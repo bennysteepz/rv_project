@@ -56,7 +56,6 @@ public class rebuildAgentMojo extends AbstractMojo {
         String jarFilePath = agentsPath + "/JavaMOPAgent.jar";
         String xmlFilePath = agentsPath + "/META-INF/aop-ajc.xml";
         String txtAllSpecsFilePath = "allSpecs.txt"; // store in client plugin root directory
-//        String METAFilePath = agentsPath + "/META-INF";
 
         // INSTANTIATE CLASSES
         JarWork jarWork = new JarWork(); // contains methods for working with .jar files
@@ -64,29 +63,30 @@ public class rebuildAgentMojo extends AbstractMojo {
         TxtWork txtWork = new TxtWork(); // contains methods for working with .txt files
 
         // 1. EXTRACT JAR
-        // try extracting Jar file
-//        try {
-//            // jar path followed by destination path
-//            jarWork.extractJar(jarFilePath, agentsPath);
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
+        // Try extracting Jar file
+        try {
+            // Jar path followed by destination path
+            jarWork.extractJar(jarFilePath, agentsPath);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
         // 2. CREATE specListAll.txt in client plugin root dir FROM aop-ajc.xml in agents
         // Read aop-ajc.xml file
         // Store specs from xml tags in List<String> allSpecs
-//        List<String> allSpecs = xmlWork.readXml(xmlFilePath);
-//        // Create allSpecs.txt and write allSpecs to it
-//        txtWork.createTxtFile(txtAllSpecsFilePath);
-//        // Write aop-ajc.xml spec strings to specListAll.txt
-//        txtWork.writeTxtFile(txtAllSpecsFilePath, allSpecs);
+        List<String> allSpecs = xmlWork.readXml(xmlFilePath);
+        // Create allSpecs.txt and write allSpecs to it
+        txtWork.createTxtFile(txtAllSpecsFilePath);
+        // Write aop-ajc.xml spec strings to specListAll.txt
+        txtWork.writeTxtFile(txtAllSpecsFilePath, allSpecs);
 
-        // 3. RECREATE XML file from specs.txt (located in my plugin's resources directory)
+        // 3. RECREATE XML file from specs.txt (which is located in my plugin's resources directory)
         // ** specs.txt is given for now, but later it will be updated programatically **
         // Read specs.txt and store lines in List<String> specsToInclude variable
         List<String> specsToInclude = txtWork.getLines(specsPath);
         // First remove old xml file to replace
-//        xmlWork.deleteXml(xmlFilePath);
+        // (later found out this is unnecessary, but I suppose it can't hurt to assure old file is gone)
+        xmlWork.deleteXml(xmlFilePath);
         // Try to create new XML file with specsToInclude
         try {
             xmlWork.createXML(xmlFilePath, specsToInclude);
