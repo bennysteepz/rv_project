@@ -42,22 +42,26 @@ public class rebuildAgentMojo extends AbstractMojo {
     @Parameter(property = "agentsPath", defaultValue = "")
     private String agentsPath;
 
-    // : Path to the parent directory of JavaMOPAgent.jar
-    @Parameter(property = "specListPath", defaultValue = "")
-    private List<String> specListPath;
+    // specListPath: path to the .txt file listing specs to include
+    @Parameter(property = "specsPath", defaultValue = "")
+    private String specsPath;
 
     @Override
     public void execute() throws MojoExecutionException, MojoFailureException {
         getLog().info("Starting rebuildAgent execute() method...");
 
-        // 0. CREATE FILE PATH VARIABLES
+        // CREATE FILE PATH VARIABLES
         String jarFilePath = agentsPath + "/JavaMOPAgent.jar";
         String xmlFilePath = agentsPath + "/META-INF/aop-ajc.xml";
-        List<String> txtSpecsFilePath = specListPath;
+        String txtSpecsFilePath = specsPath;
+        String txtAllSpecsFilePath = "/allSpecs.txt"; // store in client plugin root directory
+
+        // INSTANTIATE CLASSES
+        JarWork jarWork = new JarWork(); // contains methods for working with .jar files
+        XmlWork xmlWork = new XmlWork(); // contains methods for working with .xml files
+        TxtWork txtWork = new TxtWork(); // contains methods for working with .txt files
 
         // 1. EXTRACT JAR
-        // Create new instance of JarWork class
-//        JarWork jarWork = new JarWork();
 //        // try extracting Jar file
 //        try {
 //            // jar path followed by destination path
@@ -66,19 +70,14 @@ public class rebuildAgentMojo extends AbstractMojo {
 //            e.printStackTrace();
 //        }
 
-        // 2. CREATE specListAll.txt in my plugin root dir FROM aop-ajc.xml in agents
+        // 2. CREATE specListAll.txt in client plugin root dir FROM aop-ajc.xml in agents
         // Read aop-ajc.xml file
-        // Create new instance of XmlWork class
-        XmlWork xmlWork = new XmlWork();
         // Store specs from xml tags in List<String> allSpecs
         List<String> allSpecs = xmlWork.readXml(xmlFilePath);
-        // Create specListAll.txt by looping through allSpecs
-        for (int i = 0; i < allSpecs.size(); i++) {
-            // Current spec
-            String thisSpec = allSpecs.get(i);
-            getLog().info("current spec: " + thisSpec);
-        }
+        // Create allSpecs.txt and write allSpecs to it
+        txtWork.createTxtFile(txtAllSpecsFilePath);
         // Write aop-ajc.xml spec strings to specListAll.txt
+        txtWork.writeTxtFile(txtAllSpecsFilePath, allSpecs);
 
 
     }
@@ -159,9 +158,9 @@ public class rebuildAgentMojo extends AbstractMojo {
                     myWriter.write(this_line);
                 }
                 myWriter.close();
-                System.out.println("Successfully wrote to the file.");
+                getLog().info("Successfully wrote to the file.");
             } catch (IOException e) {
-                System.out.println("An error occurred.");
+                getLog().info("An error occurred.");
                 e.printStackTrace();
             }
         }
@@ -179,7 +178,7 @@ public class rebuildAgentMojo extends AbstractMojo {
                 }
                 myReader.close();
             } catch (FileNotFoundException e) {
-                System.out.println("An error occurred, FileNotFoundException");
+                getLog().info("An error occurred, FileNotFoundException");
                 e.printStackTrace();
             }
             return fileLines;

@@ -49,8 +49,8 @@
           <description></description>
         </parameter>
         <parameter>
-          <name>specListPath</name>
-          <type>java.util.List</type>
+          <name>specsPath</name>
+          <type>java.lang.String</type>
           <required>false</required>
           <editable>true</editable>
           <description></description>
@@ -58,7 +58,7 @@
       </parameters>
       <configuration>
         <agentsPath implementation="java.lang.String" default-value="">${agentsPath}</agentsPath>
-        <specListPath implementation="java.util.List" default-value="">${specListPath}</specListPath>
+        <specsPath implementation="java.lang.String" default-value="">${specsPath}</specsPath>
       </configuration>
     </mojo>
     <mojo>
