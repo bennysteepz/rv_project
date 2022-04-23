@@ -56,47 +56,57 @@ public class rebuildAgentMojo extends AbstractMojo {
         String jarFilePath = agentsPath + "/JavaMOPAgent.jar";
         String xmlFilePath = agentsPath + "/META-INF/aop-ajc.xml";
         String txtAllSpecsFilePath = "allSpecs.txt"; // store in client plugin root directory
+        String METAFilePath = agentsPath + "/META-INF/";
 
         // INSTANTIATE CLASSES
         JarWork jarWork = new JarWork(); // contains methods for working with .jar files
         XmlWork xmlWork = new XmlWork(); // contains methods for working with .xml files
         TxtWork txtWork = new TxtWork(); // contains methods for working with .txt files
+        GeneralOps genOps = new GeneralOps(); // contains general methods for all file types
 
         // 1. EXTRACT JAR
         // Try extracting Jar file
-        try {
-            // Jar path followed by destination path
-            jarWork.extractJar(jarFilePath, agentsPath);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+//        try {
+//            // Jar path followed by destination path
+//            jarWork.extractJar(jarFilePath, agentsPath);
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
 
         // 2. CREATE specListAll.txt in client plugin root dir FROM aop-ajc.xml in agents
         // Read aop-ajc.xml file
         // Store specs from xml tags in List<String> allSpecs
-        List<String> allSpecs = xmlWork.readXml(xmlFilePath);
-        // Create allSpecs.txt and write allSpecs to it
-        txtWork.createTxtFile(txtAllSpecsFilePath);
-        // Write aop-ajc.xml spec strings to specListAll.txt
-        txtWork.writeTxtFile(txtAllSpecsFilePath, allSpecs);
+//        List<String> allSpecs = xmlWork.readXml(xmlFilePath);
+//        // Create allSpecs.txt and write allSpecs to it
+//        txtWork.createTxtFile(txtAllSpecsFilePath);
+//        // Write aop-ajc.xml spec strings to specListAll.txt
+//        txtWork.writeTxtFile(txtAllSpecsFilePath, allSpecs);
 
         // 3. RECREATE XML file from specs.txt (which is located in my plugin's resources directory)
         // ** specs.txt is given for now, but later it will be updated programatically **
         // Read specs.txt and store lines in List<String> specsToInclude variable
-        List<String> specsToInclude = txtWork.getLines(specsPath);
+//        List<String> specsToInclude = txtWork.getLines(specsPath);
         // First remove old xml file to replace
         // (later found out this is unnecessary, but I suppose it can't hurt to assure old file is gone)
-        xmlWork.deleteXml(xmlFilePath);
+        genOps.deleteFile(xmlFilePath);
         // Try to create new XML file with specsToInclude
-        try {
-            xmlWork.createXML(xmlFilePath, specsToInclude);
-        } catch (ParserConfigurationException e) {
-            e.printStackTrace();
-        } catch (TransformerException e) {
-            e.printStackTrace();
-        }
+//        try {
+//            xmlWork.createXML(xmlFilePath, specsToInclude);
+//        } catch (ParserConfigurationException e) {
+//            e.printStackTrace();
+//        } catch (TransformerException e) {
+//            e.printStackTrace();
+//        }
 
         // 4. REBUILD JAR and install it
+        // Delete old jar
+        // Create new jar in META-INF directory
+//        try {
+//            // createJar takes in path to jar and path to META-INF
+//            jarWork.createJar(jarFilePath, METAFilePath);
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
 
         // 5. RUN TESTS in the client plugin
     }
@@ -111,7 +121,7 @@ public class rebuildAgentMojo extends AbstractMojo {
         }
         // Extracts jar located at filePath
         // inputs filePath: path to .jar file, and destPath: path to destination folder
-        // Referenced from:
+        // Reference:
         // https://stackoverflow.com/questions/1529611/how-to-write-a-java-program-which-can-extract-a-jar-file-and-store-its-data-in-s
         public void extractJar(String filePath, String destPath) throws java.io.IOException {
             getLog().info("Extracting Jar...");
@@ -139,6 +149,46 @@ public class rebuildAgentMojo extends AbstractMojo {
                 }
                 fo.close();
                 is.close();
+            }
+        }
+        // Create jar file, reference:
+        // https://stackoverflow.com/questions/1281229/how-to-use-jaroutputstream-to-create-a-jar-file/
+        // takes in path to .jar file and path to META file (parent)
+        public void createJar(String jarPath, String METAPath) throws IOException {
+            Manifest manifest = new Manifest();
+            manifest.getMainAttributes().put(Attributes.Name.MANIFEST_VERSION, "1.0");
+            JarOutputStream target = new JarOutputStream(new FileOutputStream(jarPath), manifest);
+            add(new File(METAPath), target);
+            target.close();
+        }
+        // Helper function for createJar
+        private void add(File source, JarOutputStream target) throws IOException {
+            String name = source.getPath().replace("\\", "/");
+            if (source.isDirectory()) {
+                if (!name.endsWith("/")) {
+                    name += "/";
+                }
+                JarEntry entry = new JarEntry(name);
+                entry.setTime(source.lastModified());
+                target.putNextEntry(entry);
+                target.closeEntry();
+                for (File nestedFile : source.listFiles()) {
+                    add(nestedFile, target);
+                }
+            } else {
+                JarEntry entry = new JarEntry(name);
+                entry.setTime(source.lastModified());
+                target.putNextEntry(entry);
+                try (BufferedInputStream in = new BufferedInputStream(new FileInputStream(source))) {
+                    byte[] buffer = new byte[1024];
+                    while (true) {
+                        int count = in.read(buffer);
+                        if (count == -1)
+                            break;
+                        target.write(buffer, 0, count);
+                    }
+                    target.closeEntry();
+                }
             }
         }
     }
@@ -300,8 +350,12 @@ public class rebuildAgentMojo extends AbstractMojo {
 
             transformer.transform(source, result);
         }
-        // Delete Xml file
-        private void deleteXml(String filePath) {
+    }
+    // generalOps class contains general methods that can be applied to all file types:
+    // (jar, xml and txt for example)
+    public class GeneralOps {
+        // Delete file
+        private void deleteFile(String filePath) {
             File myObj = new File(filePath);
             if (myObj.delete()) {
                 getLog().info("Deleted the file: " + myObj.getName());
