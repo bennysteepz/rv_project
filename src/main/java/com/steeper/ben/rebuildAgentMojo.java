@@ -84,14 +84,16 @@ public class rebuildAgentMojo extends AbstractMojo {
         // ** specs.txt is given for now, but later it will be updated programatically **
         // Read specs.txt and store lines in List<String> specsToInclude variable
         List<String> specsToInclude = txtWork.getLines(specsPath);
+        // First remove old xml file to replace
+        xmlWork.deleteXml(xmlFilePath);
         // Try to create new XML file with specsToInclude
-        try {
-            xmlWork.createXML("new.xml", specsToInclude);
-        } catch (ParserConfigurationException e) {
-            e.printStackTrace();
-        } catch (TransformerException e) {
-            e.printStackTrace();
-        }
+//        try {
+//            xmlWork.createXML(xmlFilePath, specsToInclude);
+//        } catch (ParserConfigurationException e) {
+//            e.printStackTrace();
+//        } catch (TransformerException e) {
+//            e.printStackTrace();
+//        }
 
         // 4. REBUILD JAR and install it
 
@@ -273,7 +275,7 @@ public class rebuildAgentMojo extends AbstractMojo {
 
             //...Create XML elements, and others...
 
-            // write dom document to a file
+            // Write dom document to a file
             try (FileOutputStream output =
                          new FileOutputStream(fileName)) {
                 writeXml(doc, output);
@@ -296,7 +298,15 @@ public class rebuildAgentMojo extends AbstractMojo {
             StreamResult result = new StreamResult(output);
 
             transformer.transform(source, result);
-
+        }
+        // Delete Xml file
+        private void deleteXml(String filePath) {
+            File myObj = new File(filePath);
+            if (myObj.delete()) {
+                getLog().info("Deleted the file: " + myObj.getName());
+            } else {
+                getLog().info("Failed to delete the file.");
+            }
         }
     }
 }
