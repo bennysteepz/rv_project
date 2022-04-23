@@ -54,7 +54,7 @@ public class rebuildAgentMojo extends AbstractMojo {
         String jarFilePath = agentsPath + "/JavaMOPAgent.jar";
         String xmlFilePath = agentsPath + "/META-INF/aop-ajc.xml";
         String txtSpecsFilePath = specsPath;
-        String txtAllSpecsFilePath = "/allSpecs.txt"; // store in client plugin root directory
+        String txtAllSpecsFilePath = "allSpecs.txt"; // store in client plugin root directory
 
         // INSTANTIATE CLASSES
         JarWork jarWork = new JarWork(); // contains methods for working with .jar files
