@@ -8,14 +8,10 @@ import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.project.MavenProject;
 
-import java.io.IOException;
+import java.io.*;
 import java.util.List;
 import java.util.jar.*;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.Scanner;
 import java.util.List;
 import java.util.ArrayList;
@@ -28,6 +24,12 @@ import org.xml.sax.SAXException;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.OutputKeys;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerException;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -82,10 +84,18 @@ public class rebuildAgentMojo extends AbstractMojo {
         // ** specs.txt is given for now, but later it will be updated programatically **
         // Read specs.txt and store lines in List<String> specsToInclude variable
         List<String> specsToInclude = txtWork.getLines(specsPath);
-        for (int i = 0; i < specsToInclude.size(); i++) {
-            String this_line = specsToInclude.get(i);
-            getLog().info("specs to include: " + this_line);
+        // Try to create new XML file with specsToInclude
+        try {
+            xmlWork.createXML("new.xml", specsToInclude);
+        } catch (ParserConfigurationException e) {
+            e.printStackTrace();
+        } catch (TransformerException e) {
+            e.printStackTrace();
         }
+
+        // 4. REBUILD JAR and install it
+
+        // 5. RUN TESTS in the client plugin
     }
 
     // CLASSES
@@ -235,6 +245,55 @@ public class rebuildAgentMojo extends AbstractMojo {
                 e.printStackTrace();
             }
             return xmlContent;
+        }
+        // Generates <aspectj> xml file from specs List
+        // Calls helper function writeXml
+        // reference: https://mkyong.com/java/how-to-create-xml-file-in-java-dom/
+        public void createXML(String fileName, List<String> specList)
+                throws ParserConfigurationException, TransformerException {
+
+            DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
+            DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
+
+            // Root elements
+            Document doc = docBuilder.newDocument();
+            Element rootElement = doc.createElement("aspectj");
+            doc.appendChild(rootElement);
+
+            Element aspectsElement = doc.createElement("aspects");
+            rootElement.appendChild(aspectsElement);
+
+            // Loop through every spec in specsList
+            Element aspectElement = doc.createElement("aspect");
+            aspectsElement.appendChild(aspectElement);
+            aspectElement.setAttribute("name","mop.ShutdownHook_UnsafeAWTCallMonitorAspect");
+
+            //...Create XML elements, and others...
+
+            // write dom document to a file
+            try (FileOutputStream output =
+                         new FileOutputStream(fileName)) {
+                writeXml(doc, output);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        // Write doc to output stream
+        private void writeXml(Document doc,
+                              OutputStream output)
+                throws TransformerException {
+
+            TransformerFactory transformerFactory = TransformerFactory.newInstance();
+            Transformer transformer = transformerFactory.newTransformer();
+
+            // pretty print XML
+            transformer.setOutputProperty(OutputKeys.INDENT, "yes");
+
+            DOMSource source = new DOMSource(doc);
+            StreamResult result = new StreamResult(output);
+
+            transformer.transform(source, result);
+
         }
     }
 }
