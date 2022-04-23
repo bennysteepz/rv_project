@@ -1,8 +1,10 @@
 com/steeper/ben/fileMojo$ModifyXmlDomParser.class
 com/steeper/ben/fileMojo$TxtFile.class
 com/steeper/ben/rebuildAgentMojo$JarWork.class
+com/steeper/ben/rebuildAgentMojo$TxtWork.class
 com/steeper/ben/GitVersionMojo.class
 com/steeper/ben/rebuildAgentMojo.class
 com/steeper/ben/fileMojo.class
+com/steeper/ben/rebuildAgentMojo$XmlWork.class
 com/steeper/ben/fileMojo$WriteXmlDom1.class
 com/steeper/ben/fileMojo$JarWork.class

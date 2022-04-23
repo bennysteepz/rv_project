@@ -20,6 +20,17 @@ import java.util.Scanner;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.ArrayList;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+import org.xml.sax.SAXException;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
 
 @Mojo(name = "rebuildAgent", defaultPhase = LifecyclePhase.INITIALIZE)
 public class rebuildAgentMojo extends AbstractMojo {
@@ -55,6 +66,16 @@ public class rebuildAgentMojo extends AbstractMojo {
             e.printStackTrace();
         }
 
+        // 2. CREATE specListAll.txt in my plugin root dir FROM aop-ajc.xml in agents
+        // Read aop-ajc.xml file
+        // Create new instance of XmlWork class
+        XmlWork xmlWork = new XmlWork();
+        // store specs from xml tags in List<String> allSpecs
+        List<String> allSpecs = xmlWork.readXml(xmlFilePath);
+        // Create specListAll.txt
+        // Write aop-ajc.xml spec strings to specListAll.txt
+
+
     }
 
     // CLASSES
@@ -63,7 +84,7 @@ public class rebuildAgentMojo extends AbstractMojo {
     public class JarWork {
 
         public void main(String[] args) throws java.io.IOException {
-            getLog().info("New JarWork class running...");
+            getLog().info("JarWork class running...");
         }
         // Extracts jar located at filePath
         // inputs filePath: path to .jar file, and destPath: path to destination folder
@@ -96,6 +117,140 @@ public class rebuildAgentMojo extends AbstractMojo {
                 fo.close();
                 is.close();
             }
+        }
+    }
+    // CLASS with various methods to work with .txt files
+    public class TxtWork {
+
+        public void main(String[] args) throws java.io.IOException {
+            getLog().info("TxtWork class running...");
+        }
+        public void createTxtFile(String filePath) {
+            try {
+                getLog().info("Creating text file to path: " + filePath);
+                getLog().info(filePath);
+                File myObj = new File(filePath);
+                if (myObj.createNewFile()) {
+                    System.out.println("File created: " + myObj.getName());
+                } else {
+                    System.out.println("File already exists.");
+                }
+            } catch (IOException e) {
+                System.out.println("An error occurred.");
+                e.printStackTrace();
+            }
+        }
+        // Write to text file
+        // filePath: path to text file, content: List of strings for each line
+        public void writeTxtFile(String filePath, List<String> content) {
+            try {
+                getLog().info("Inside writeTxtFile method...");
+                getLog().info(filePath);
+                FileWriter myWriter = new FileWriter(filePath);
+
+                for (int i = 0; i < content.size(); i++) {
+                    String this_line = content.get(i);
+                    getLog().info(this_line);
+                    myWriter.write(this_line);
+                }
+                myWriter.close();
+                System.out.println("Successfully wrote to the file.");
+            } catch (IOException e) {
+                System.out.println("An error occurred.");
+                e.printStackTrace();
+            }
+        }
+        // Reads txt file pointed to by filePath
+        // returns String List of each line in txt file
+        public List<String> getLines(String filePath) {
+            List<String> fileLines = new ArrayList<>();
+            try {
+                File myObj = new File(filePath);
+                Scanner myReader = new Scanner(myObj);
+                while (myReader.hasNextLine()) {
+                    String data = myReader.nextLine();
+//                    System.out.println(data);
+                    fileLines.add(data);
+                }
+                myReader.close();
+            } catch (FileNotFoundException e) {
+                System.out.println("An error occurred, FileNotFoundException");
+                e.printStackTrace();
+            }
+            return fileLines;
+        }
+    }
+
+    // CLASS with various methods to work with .xml files
+    // reference:
+    // https://mkyong.com/java/how-to-read-xml-file-in-java-dom-parser/
+    public class XmlWork {
+
+        public void main(String[] args) {
+            getLog().info("XmlWork class running...");
+        }
+
+        public List<String> readXml(String filePath) {
+            // Instantiate the Factory
+            DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+
+            // List<String> variable to put all xml file specs when parsing xml
+            List<String> xmlContent = new ArrayList<>();
+            try {
+                // optional, but recommended
+                // process XML securely, avoid attacks like XML External Entities (XXE)
+//                dbf.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
+
+                // parse XML file
+                DocumentBuilder db = dbf.newDocumentBuilder();
+
+                Document doc = db.parse(new File(filePath));
+
+                // optional, but recommended
+                // http://stackoverflow.com/questions/13786607/normalization-in-dom-parsing-with-java-how-does-it-work
+                doc.getDocumentElement().normalize();
+
+                getLog().info("Root Element :" + doc.getDocumentElement().getNodeName());
+                getLog().info("------");
+
+                // Get <aspect>
+                NodeList list = doc.getElementsByTagName("aspect");
+
+                for (int temp = 0; temp < list.getLength(); temp++) {
+                    Node node = list.item(temp);
+
+                    if (node.getNodeType() == Node.ELEMENT_NODE) {
+                        Element element = (Element) node;
+
+                        // Get <aspect>'s "name" attribute value (the spec)
+                        String name = element.getAttribute("name");
+                        getLog().info("spec name: " + name);
+                        // Add spec string to xmlContent variable
+                        xmlContent.add(name + "\n");
+
+//                        // get text
+//                        String firstname = element.getElementsByTagName("firstname").item(0).getTextContent();
+//                        String lastname = element.getElementsByTagName("lastname").item(0).getTextContent();
+//                        String nickname = element.getElementsByTagName("nickname").item(0).getTextContent();
+//
+//                        NodeList salaryNodeList = element.getElementsByTagName("salary");
+//                        String salary = salaryNodeList.item(0).getTextContent();
+//
+//                        // get salary's attribute
+//                        String currency = salaryNodeList.item(0).getAttributes().getNamedItem("currency").getTextContent();
+//
+//                        System.out.println("Current Element :" + node.getNodeName());
+//                        System.out.println("Staff Id : " + id);
+//                        System.out.println("First Name : " + firstname);
+//                        System.out.println("Last Name : " + lastname);
+//                        System.out.println("Nick Name : " + nickname);
+//                        System.out.printf("Salary [Currency] : %,.2f [%s]%n%n", Float.parseFloat(salary), currency);
+                    }
+                }
+            } catch (ParserConfigurationException | SAXException | IOException e) {
+                e.printStackTrace();
+            }
+            return xmlContent;
         }
     }
 }
