@@ -35,7 +35,7 @@ import java.io.InputStream;
 @Mojo(name = "rebuildAgent", defaultPhase = LifecyclePhase.INITIALIZE)
 public class rebuildAgentMojo extends AbstractMojo {
 
-    @Parameter(property = "project", readonly = true)
+    @Parameter(property = "project", readonly = false)
     private MavenProject project;
 
     // agentJarPath: Path to the parent directory of JavaMOPAgent.jar
@@ -77,7 +77,7 @@ public class rebuildAgentMojo extends AbstractMojo {
         // Create allSpecs.txt and write allSpecs to it
         txtWork.createTxtFile(txtAllSpecsFilePath);
         // Write aop-ajc.xml spec strings to specListAll.txt
-        txtWork.writeTxtFile(txtAllSpecsFilePath, allSpecs);
+//        txtWork.writeTxtFile(txtAllSpecsFilePath, allSpecs);
 
 
     }

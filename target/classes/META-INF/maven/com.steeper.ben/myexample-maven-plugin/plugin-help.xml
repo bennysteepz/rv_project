@@ -49,6 +49,13 @@
           <description></description>
         </parameter>
         <parameter>
+          <name>project</name>
+          <type>org.apache.maven.project.MavenProject</type>
+          <required>false</required>
+          <editable>true</editable>
+          <description></description>
+        </parameter>
+        <parameter>
           <name>specsPath</name>
           <type>java.lang.String</type>
           <required>false</required>
@@ -58,6 +65,7 @@
       </parameters>
       <configuration>
         <agentsPath implementation="java.lang.String" default-value="">${agentsPath}</agentsPath>
+        <project implementation="org.apache.maven.project.MavenProject">${project}</project>
         <specsPath implementation="java.lang.String" default-value="">${specsPath}</specsPath>
       </configuration>
     </mojo>

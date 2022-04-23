@@ -65,7 +65,7 @@
           <name>project</name>
           <type>org.apache.maven.project.MavenProject</type>
           <required>false</required>
-          <editable>false</editable>
+          <editable>true</editable>
           <description></description>
         </parameter>
         <parameter>
