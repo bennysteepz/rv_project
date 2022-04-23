@@ -263,10 +263,13 @@ public class rebuildAgentMojo extends AbstractMojo {
             Element aspectsElement = doc.createElement("aspects");
             rootElement.appendChild(aspectsElement);
 
-            // Loop through every spec in specsList
-            Element aspectElement = doc.createElement("aspect");
-            aspectsElement.appendChild(aspectElement);
-            aspectElement.setAttribute("name","mop.ShutdownHook_UnsafeAWTCallMonitorAspect");
+            // Loop through every spec in specsList and write it to xml file
+            for (int i = 0; i < specList.size(); i++) {
+                String this_spec = specList.get(i);
+                Element aspectElement = doc.createElement("aspect");
+                aspectsElement.appendChild(aspectElement);
+                aspectElement.setAttribute("name", this_spec);
+            }
 
             //...Create XML elements, and others...
 
