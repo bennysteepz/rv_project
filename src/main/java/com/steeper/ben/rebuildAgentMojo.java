@@ -77,7 +77,7 @@ public class rebuildAgentMojo extends AbstractMojo {
         // Create allSpecs.txt and write allSpecs to it
         txtWork.createTxtFile(txtAllSpecsFilePath);
         // Write aop-ajc.xml spec strings to specListAll.txt
-//        txtWork.writeTxtFile(txtAllSpecsFilePath, allSpecs);
+        txtWork.writeTxtFile(txtAllSpecsFilePath, allSpecs);
 
 
     }
