@@ -88,7 +88,7 @@ public class rebuildAgentMojo extends AbstractMojo {
 //        List<String> specsToInclude = txtWork.getLines(specsPath);
         // First remove old xml file to replace
         // (later found out this is unnecessary, but I suppose it can't hurt to assure old file is gone)
-        genOps.deleteFile(xmlFilePath);
+//        genOps.deleteFile(xmlFilePath);
         // Try to create new XML file with specsToInclude
 //        try {
 //            xmlWork.createXML(xmlFilePath, specsToInclude);
@@ -101,12 +101,12 @@ public class rebuildAgentMojo extends AbstractMojo {
         // 4. REBUILD JAR and install it
         // Delete old jar
         // Create new jar in META-INF directory
-//        try {
-//            // createJar takes in path to jar and path to META-INF
-//            jarWork.createJar(jarFilePath, METAFilePath);
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
+        try {
+            // createJar takes in path to jar and path to META-INF
+            jarWork.createJar(jarFilePath, METAFilePath);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
         // 5. RUN TESTS in the client plugin
     }
