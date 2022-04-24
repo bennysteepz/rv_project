@@ -57,13 +57,12 @@ public class rebuildAgentMojo extends AbstractMojo {
         String xmlFilePath = agentsPath + "/META-INF/aop-ajc.xml";
         String txtAllSpecsFilePath = "allSpecs.txt"; // store in client plugin root directory
         String metaFilePath = agentsPath + "/META-INF/";
-        String manifestFilePath = agentsPath + "/META-INF/MANIFEST.MF";
 
         // INSTANTIATE CLASSES
         JarWork jarWork = new JarWork(); // contains methods for working with .jar files
         XmlWork xmlWork = new XmlWork(); // contains methods for working with .xml files
         TxtWork txtWork = new TxtWork(); // contains methods for working with .txt files
-        GeneralOps genOps = new GeneralOps(); // contains general methods for all file types
+        FileWork fileWork = new FileWork(); // contains general methods for all file types
 
         // 1. EXTRACT JAR
         // Try extracting Jar file
@@ -89,7 +88,7 @@ public class rebuildAgentMojo extends AbstractMojo {
 //        List<String> specsToInclude = txtWork.getLines(specsPath);
         // First remove old xml file to replace
         // (later found out this is unnecessary, but I suppose it can't hurt to assure old file is gone)
-//        genOps.deleteFile(xmlFilePath);
+//        fileWork.deleteFile(xmlFilePath);
         // Try to create new XML file with specsToInclude
 //        try {
 //            xmlWork.createXML(xmlFilePath, specsToInclude);
@@ -105,7 +104,7 @@ public class rebuildAgentMojo extends AbstractMojo {
         try {
             // createJar takes in path to jar and path to META-INF
 //            jarWork.createJar(jarFilePath, metaFilePath);
-            jarWork.getManifest(manifestFilePath);
+            jarWork.getManifest(metaFilePath);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -372,9 +371,9 @@ public class rebuildAgentMojo extends AbstractMojo {
             transformer.transform(source, result);
         }
     }
-    // generalOps class contains general methods that can be applied to all file types:
+    // FileWork class contains general methods that can be applied to all file types:
     // (jar, xml and txt for example)
-    public class GeneralOps {
+    public class FileWork {
         // Delete file
         private void deleteFile(String filePath) {
             File myObj = new File(filePath);
