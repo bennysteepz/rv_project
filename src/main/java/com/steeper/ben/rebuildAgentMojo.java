@@ -158,7 +158,7 @@ public class rebuildAgentMojo extends AbstractMojo {
         public void createJar(String sourcePath, String targetPath, Manifest manifest_custom) throws IOException {
             Manifest manifest = new Manifest();
 //            manifest.getMainAttributes().put(Attributes.Name.MANIFEST_VERSION, "1.0");
-            JarOutputStream target = new JarOutputStream(new FileOutputStream("../output.jar"), manifest);
+            JarOutputStream target = new JarOutputStream(new FileOutputStream("../output2.jar"), manifest_custom);
             File inputDirectory = new File(sourcePath);
             for (File nestedFile : inputDirectory.listFiles())
                 add("", nestedFile, target);
@@ -190,8 +190,7 @@ public class rebuildAgentMojo extends AbstractMojo {
                 in = new BufferedInputStream(new FileInputStream(source));
 
                 byte[] buffer = new byte[1024];
-                while (true)
-                {
+                while (true) {
                     int count = in.read(buffer);
                     if (count == -1)
                         break;
@@ -199,8 +198,7 @@ public class rebuildAgentMojo extends AbstractMojo {
                 }
                 target.closeEntry();
             }
-            finally
-            {
+            finally {
                 if (in != null)
                     in.close();
             }
