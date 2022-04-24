@@ -101,9 +101,10 @@ public class rebuildAgentMojo extends AbstractMojo {
         // Delete old jar
         // Create new jar in META-INF directory
         try {
-            // createJar takes in path to jar and path to META-INF
-//            jarWork.createJar(jarFilePath, metaFilePath);
-            jarWork.getManifest(metaFilePath);
+            // Get the manifest and pass it into the createJar() method
+            Manifest manifest = jarWork.getManifest(metaFilePath);
+            // createJar takes in path to jar, path to META-INF and Manifest fil
+            jarWork.createJar(jarFilePath, metaFilePath, manifest);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -153,11 +154,8 @@ public class rebuildAgentMojo extends AbstractMojo {
         }
         // Create jar file, reference:
         // https://stackoverflow.com/questions/1281229/how-to-use-jaroutputstream-to-create-a-jar-file/
-        // takes in path to .jar file and path to META file (parent)
-        public void createJar(String jarPath, String METAPath) throws IOException {
-            Manifest manifest = new Manifest();
-
-//            manifest.getMainAttributes().put(Attributes.Name.MANIFEST_VERSION, "1.0");
+        // takes in path to .jar file, path to META file (parent),and Manifest file from getManifest() method
+        public void createJar(String jarPath, String METAPath, Manifest manifest) throws IOException {
             JarOutputStream target = new JarOutputStream(new FileOutputStream(jarPath), manifest);
             add(new File(METAPath), target);
             target.close();
