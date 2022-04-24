@@ -156,9 +156,9 @@ public class rebuildAgentMojo extends AbstractMojo {
         // https://stackoverflow.com/questions/1281229/how-to-use-jaroutputstream-to-create-a-jar-file/
         // takes in source path .jar file, target path, and Manifest file from getManifest() method
         public void createJar(String sourcePath, String targetPath, Manifest manifest_custom) throws IOException {
-            Manifest manifest = new Manifest();
-            manifest.getMainAttributes().put(Attributes.Name.MANIFEST_VERSION, "1.0");
-            JarOutputStream target = new JarOutputStream(new FileOutputStream("../output.jar"), manifest);
+//            Manifest manifest = new Manifest();
+//            manifest.getMainAttributes().put(Attributes.Name.MANIFEST_VERSION, "1.0");
+            JarOutputStream target = new JarOutputStream(new FileOutputStream("../output.jar"), manifest_custom);
             File inputDirectory = new File(sourcePath);
             for (File nestedFile : inputDirectory.listFiles())
                 add("", nestedFile, target);
