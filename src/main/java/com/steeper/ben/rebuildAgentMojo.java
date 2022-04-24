@@ -104,7 +104,7 @@ public class rebuildAgentMojo extends AbstractMojo {
             // Get the manifest and pass it into the createJar() method
             Manifest manifest = jarWork.getManifest(metaFilePath);
             // createJar takes in path to jar, path to META-INF and Manifest fil
-            jarWork.createJar(agentsPath, jarFilePath, manifest);
+            jarWork.createJar(jarFilePath, "JavaMOPAgent.jar", manifest);
         } catch (IOException e) {
             e.printStackTrace();
         }
