@@ -154,10 +154,10 @@ public class rebuildAgentMojo extends AbstractMojo {
         }
         // Create jar file, reference:
         // https://stackoverflow.com/questions/1281229/how-to-use-jaroutputstream-to-create-a-jar-file/
-        // takes in path to .jar file, input directory path, and Manifest file from getManifest() method
-        public void createJar(String jarPath, String inputDir, Manifest manifest) throws IOException {
-            JarOutputStream target = new JarOutputStream(new FileOutputStream(jarPath), manifest);
-            add(new File(inputDir), target);
+        // takes in source path .jar file, target path, and Manifest file from getManifest() method
+        public void createJar(String sourcePath, String targetPath, Manifest manifest) throws IOException {
+            JarOutputStream target = new JarOutputStream(new FileOutputStream(targetPath), manifest);
+            add(new File(sourcePath), target);
             target.close();
         }
         // Helper function for createJar
