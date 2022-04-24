@@ -157,8 +157,8 @@ public class rebuildAgentMojo extends AbstractMojo {
         // takes in source path .jar file, target path, and Manifest file from getManifest() method
         public void createJar(String sourcePath, String targetPath, Manifest manifest_custom) throws IOException {
             Manifest manifest = new Manifest();
-//            manifest.getMainAttributes().put(Attributes.Name.MANIFEST_VERSION, "1.0");
-            JarOutputStream target = new JarOutputStream(new FileOutputStream("../output2.jar"), manifest_custom);
+            manifest.getMainAttributes().put(Attributes.Name.MANIFEST_VERSION, "1.0");
+            JarOutputStream target = new JarOutputStream(new FileOutputStream("../output2.jar"), manifest);
             File inputDirectory = new File(sourcePath);
             for (File nestedFile : inputDirectory.listFiles())
                 add("", nestedFile, target);
