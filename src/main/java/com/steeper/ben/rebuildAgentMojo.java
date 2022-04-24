@@ -102,12 +102,12 @@ public class rebuildAgentMojo extends AbstractMojo {
         // Delete old jar
         // Create new jar in META-INF directory
         try {
-            // Get the manifest and pass it into the createJar() method
+            // Get the current manifest and pass it into the createJar() method
             Manifest manifest = jarWork.getManifest(metaFilePath);
-            // remove old manifest to avoid duplicate manifest error
+            // remove the manifest before creating jar to avoid duplicate manifest error
             fileWork.deleteFile(manifestPath);
             // createJar takes in path to jar, path to META-INF and cached Manifest file
-            jarWork.createJar(agentsPath, "../output2.jar", manifest);
+            jarWork.createJar(agentsPath, jarFilePath, manifest);
         } catch (IOException e) {
             e.printStackTrace();
         }
