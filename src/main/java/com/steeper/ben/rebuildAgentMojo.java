@@ -57,6 +57,7 @@ public class rebuildAgentMojo extends AbstractMojo {
         String xmlFilePath = agentsPath + "/META-INF/aop-ajc.xml";
         String txtAllSpecsFilePath = "allSpecs.txt"; // store in client plugin root directory
         String metaFilePath = agentsPath + "/META-INF/";
+        String manifestPath = agentsPath + "/META-INF/MANIFEST.MF";
 
         JarWork jarWork = new JarWork(); // contains methods for working with .jar files
         XmlWork xmlWork = new XmlWork(); // contains methods for working with .xml files
@@ -103,8 +104,10 @@ public class rebuildAgentMojo extends AbstractMojo {
         try {
             // Get the manifest and pass it into the createJar() method
             Manifest manifest = jarWork.getManifest(metaFilePath);
-            // createJar takes in path to jar, path to META-INF and Manifest fil
-            jarWork.createJar(agentsPath, "testAgent.jar", manifest);
+            // remove old manifest to avoid duplicate manifest error
+            fileWork.deleteFile(manifestPath);
+            // createJar takes in path to jar, path to META-INF and cached Manifest file
+            jarWork.createJar(agentsPath, "../output2.jar", manifest);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -156,19 +159,19 @@ public class rebuildAgentMojo extends AbstractMojo {
         // https://stackoverflow.com/questions/1281229/how-to-use-jaroutputstream-to-create-a-jar-file/
         // takes in source path .jar file, target path, and Manifest file from getManifest() method
         public void createJar(String sourcePath, String targetPath, Manifest manifest_custom) throws IOException {
-            Manifest manifest = new Manifest();
+//            Manifest manifest = new Manifest();
             // Build manifest just like original extracted JavaMOPAgent.jar MANIFEST.MF file...
-            manifest.getMainAttributes().put(Attributes.Name.MANIFEST_VERSION, "1.0");
-            manifest.getMainAttributes().put(Attributes.Name.IMPLEMENTATION_TITLE, "org.aspectj.weaver");
-            manifest.getMainAttributes().put(Attributes.Name.MAIN_CLASS, "org.aspectj.weaver.loadtime.Agent");
-            manifest.getMainAttributes().put(Attributes.Name.IMPLEMENTATION_VERSION, "DEVELOPMENT");
-            manifest.getMainAttributes().put(Attributes.Name.SPECIFICATION_VENDOR, "aspectj.org");
-            manifest.getMainAttributes().put(Attributes.Name.EXTENSION_NAME, "org/aspectj/weaver/");
-            manifest.getMainAttributes().put(Attributes.Name.SPECIFICATION_TITLE, "AspectJ Weaver Classes");
-            manifest.getMainAttributes().put(Attributes.Name.SPECIFICATION_VERSION, "DEVELOPMENT");
-            manifest.getMainAttributes().put(Attributes.Name.IMPLEMENTATION_VENDOR, "aspectj.org");
+//            manifest.getMainAttributes().put(Attributes.Name.MANIFEST_VERSION, "1.0");
+//            manifest.getMainAttributes().put(Attributes.Name.IMPLEMENTATION_TITLE, "org.aspectj.weaver");
+//            manifest.getMainAttributes().put(Attributes.Name.MAIN_CLASS, "org.aspectj.weaver.loadtime.Agent");
+//            manifest.getMainAttributes().put(Attributes.Name.IMPLEMENTATION_VERSION, "DEVELOPMENT");
+//            manifest.getMainAttributes().put(Attributes.Name.SPECIFICATION_VENDOR, "aspectj.org");
+//            manifest.getMainAttributes().put(Attributes.Name.EXTENSION_NAME, "org/aspectj/weaver/");
+//            manifest.getMainAttributes().put(Attributes.Name.SPECIFICATION_TITLE, "AspectJ Weaver Classes");
+//            manifest.getMainAttributes().put(Attributes.Name.SPECIFICATION_VERSION, "DEVELOPMENT");
+//            manifest.getMainAttributes().put(Attributes.Name.IMPLEMENTATION_VENDOR, "aspectj.org");
 
-            JarOutputStream target = new JarOutputStream(new FileOutputStream("../output2.jar"), manifest);
+            JarOutputStream target = new JarOutputStream(new FileOutputStream(targetPath), manifest_custom);
             File inputDirectory = new File(sourcePath);
             for (File nestedFile : inputDirectory.listFiles())
                 add("", nestedFile, target);
