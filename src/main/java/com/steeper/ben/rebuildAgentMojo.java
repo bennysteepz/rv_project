@@ -167,6 +167,7 @@ public class rebuildAgentMojo extends AbstractMojo {
                 if (!name.endsWith("/")) {
                     name += "/";
                 }
+                getLog().info("source name: " + name);
                 JarEntry entry = new JarEntry(name);
                 entry.setTime(source.lastModified());
                 target.putNextEntry(entry);
