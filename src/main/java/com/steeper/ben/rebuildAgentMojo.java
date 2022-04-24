@@ -54,10 +54,10 @@ public class rebuildAgentMojo extends AbstractMojo {
 
         // 1. CREATE FILE PATH VARIABLES and INSTANTIATE CLASSES
         String jarFilePath = agentsPath + "/JavaMOPAgent.jar";
-        String xmlFilePath = agentsPath + "/META-INF/aop-ajc.xml";
+        String xmlFilePath = agentsPath + "/extracted/META-INF/aop-ajc.xml";
         String txtAllSpecsFilePath = "allSpecs.txt"; // store in client plugin root directory
-        String metaFilePath = agentsPath + "/META-INF/";
-        String manifestPath = agentsPath + "/META-INF/MANIFEST.MF";
+        String metaFilePath = agentsPath + "/extracted/META-INF/";
+        String manifestPath = agentsPath + "/extracted/META-INF/MANIFEST.MF";
         String extractedPath = agentsPath + "/extracted"; // to be created before extracting jar
 
         JarWork jarWork = new JarWork(); // contains methods for working with .jar files
@@ -66,12 +66,13 @@ public class rebuildAgentMojo extends AbstractMojo {
         FileWork fileWork = new FileWork(); // contains general methods for all file types
 
         // 2. EXTRACT JAR
-        // Make directory in agents called "extracted" to extract file inside of
+        // Make directory in agents called "extracted" to put extracted files in
         new File(extractedPath).mkdirs();
-        // Try extracting Jar file
         try {
-            // Jar path followed by destination path
+            // // Extract Jar file - arguments: jar path followed by destination path
             jarWork.extractJar(jarFilePath, extractedPath);
+            // Delete jar that was just extracted
+            fileWork.deleteFile(jarFilePath);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -79,41 +80,40 @@ public class rebuildAgentMojo extends AbstractMojo {
         // 3. CREATE specListAll.txt in client plugin root dir FROM aop-ajc.xml in agents
         // Read aop-ajc.xml file
         // Store specs from xml tags in List<String> allSpecs
-//        List<String> allSpecs = xmlWork.readXml(xmlFilePath);
+        List<String> allSpecs = xmlWork.readXml(xmlFilePath);
         // Create allSpecs.txt and write allSpecs to it
 //        txtWork.createTxtFile(txtAllSpecsFilePath);
         // Write aop-ajc.xml spec strings to specListAll.txt
-//        txtWork.writeTxtFile(txtAllSpecsFilePath, allSpecs);
+        txtWork.writeTxtFile(txtAllSpecsFilePath, allSpecs);
 
         // 4. RECREATE XML file from specs.txt (which is located in my plugin's resources directory)
         // ** specs.txt is given for now, but later it will be updated programatically **
         // Read specs.txt and store lines in List<String> specsToInclude variable
-//        List<String> specsToInclude = txtWork.getLines(specsPath);
+        List<String> specsToInclude = txtWork.getLines(specsPath);
         // First remove old xml file to replace
         // (later found out this is unnecessary, but I suppose it can't hurt to assure old file is gone)
-//        fileWork.deleteFile(xmlFilePath);
+        fileWork.deleteFile(xmlFilePath);
         // Create new XML file with specsToInclude
-//        try {
-//            xmlWork.createXML(xmlFilePath, specsToInclude);
-//        } catch (ParserConfigurationException e) {
-//            e.printStackTrace();
-//        } catch (TransformerException e) {
-//            e.printStackTrace();
-//        }
+        try {
+            xmlWork.createXML(xmlFilePath, specsToInclude);
+        } catch (ParserConfigurationException e) {
+            e.printStackTrace();
+        } catch (TransformerException e) {
+            e.printStackTrace();
+        }
 
         // 5. REBUILD and REINSTALL JAR
-        // Delete old jar
-        // Create new jar in META-INF directory
-//        try {
-//            // Get the current manifest and pass it into the createJar() method
-//            Manifest manifest = jarWork.getManifest(metaFilePath);
-//            // remove the manifest before creating jar to avoid duplicate manifest error
-//            fileWork.deleteFile(manifestPath);
-//            // createJar takes in path to jar, path to META-INF and cached Manifest file
-//            jarWork.createJar(agentsPath, "/..output3.txt", manifest);
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
+        // Create new jar in agents directory
+        try {
+            // Get the current manifest and pass it into the createJar() method
+            Manifest manifest = jarWork.getManifest(metaFilePath);
+            // remove the manifest before creating jar to avoid duplicate manifest error
+            fileWork.deleteFile(manifestPath);
+            // createJar takes in path with files, path to .jar and cached Manifest file
+            jarWork.createJar(extractedPath, jarFilePath, manifest);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
         // 6. RUN TESTS in the client plugin
     }
