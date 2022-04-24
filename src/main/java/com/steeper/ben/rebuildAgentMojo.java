@@ -156,41 +156,53 @@ public class rebuildAgentMojo extends AbstractMojo {
         // https://stackoverflow.com/questions/1281229/how-to-use-jaroutputstream-to-create-a-jar-file/
         // takes in source path .jar file, target path, and Manifest file from getManifest() method
         public void createJar(String sourcePath, String targetPath, Manifest manifest_custom) throws IOException {
-            Manifest manifest_empty = new Manifest();
-            JarOutputStream target = new JarOutputStream(new FileOutputStream(targetPath), manifest_empty);
-            add(new File(sourcePath), target);
+            Manifest manifest = new Manifest();
+            manifest.getMainAttributes().put(Attributes.Name.MANIFEST_VERSION, "1.0");
+            JarOutputStream target = new JarOutputStream(new FileOutputStream("../output.jar"), manifest);
+            File inputDirectory = new File(sourcePath);
+            for (File nestedFile : inputDirectory.listFiles())
+                add("", nestedFile, target);
             target.close();
         }
         // Helper function for createJar
-        private void add(File source, JarOutputStream target) throws IOException {
-            String name = source.getPath().replace("\\", "/");
-            if (source.isDirectory()) {
-                if (!name.endsWith("/")) {
-                    name += "/";
-                }
-                getLog().info("source name: " + name);
-                JarEntry entry = new JarEntry(name);
-                entry.setTime(source.lastModified());
-                target.putNextEntry(entry);
-                target.closeEntry();
-                for (File nestedFile : source.listFiles()) {
-                    add(nestedFile, target);
-                    getLog().info("adding a nested file to target...");
-                }
-            } else {
-                JarEntry entry = new JarEntry(name);
-                entry.setTime(source.lastModified());
-                target.putNextEntry(entry);
-                try (BufferedInputStream in = new BufferedInputStream(new FileInputStream(source))) {
-                    byte[] buffer = new byte[1024];
-                    while (true) {
-                        int count = in.read(buffer);
-                        if (count == -1)
-                            break;
-                        target.write(buffer, 0, count);
+        private void add(String parents, File source, JarOutputStream target) throws IOException {
+            BufferedInputStream in = null;
+            try {
+                String name = (parents + source.getName()).replace("\\", "/");
+
+                if (source.isDirectory()) {
+                    if (!name.isEmpty()) {
+                        if (!name.endsWith("/"))
+                            name += "/";
+                        JarEntry entry = new JarEntry(name);
+                        entry.setTime(source.lastModified());
+                        target.putNextEntry(entry);
+                        target.closeEntry();
                     }
-                    target.closeEntry();
+                    for (File nestedFile : source.listFiles())
+                        add(name, nestedFile, target);
+                    return;
                 }
+
+                JarEntry entry = new JarEntry(name);
+                entry.setTime(source.lastModified());
+                target.putNextEntry(entry);
+                in = new BufferedInputStream(new FileInputStream(source));
+
+                byte[] buffer = new byte[1024];
+                while (true)
+                {
+                    int count = in.read(buffer);
+                    if (count == -1)
+                        break;
+                    target.write(buffer, 0, count);
+                }
+                target.closeEntry();
+            }
+            finally
+            {
+                if (in != null)
+                    in.close();
             }
         }
         // reference:
