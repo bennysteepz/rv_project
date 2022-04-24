@@ -65,48 +65,48 @@ public class rebuildAgentMojo extends AbstractMojo {
 
         // 2. EXTRACT JAR
         // Try extracting Jar file
-        try {
-            // Jar path followed by destination path
-            jarWork.extractJar(jarFilePath, agentsPath);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+//        try {
+//            // Jar path followed by destination path
+//            jarWork.extractJar(jarFilePath, agentsPath);
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
 
         // 3. CREATE specListAll.txt in client plugin root dir FROM aop-ajc.xml in agents
         // Read aop-ajc.xml file
         // Store specs from xml tags in List<String> allSpecs
-        List<String> allSpecs = xmlWork.readXml(xmlFilePath);
+//        List<String> allSpecs = xmlWork.readXml(xmlFilePath);
         // Create allSpecs.txt and write allSpecs to it
-        txtWork.createTxtFile(txtAllSpecsFilePath);
+//        txtWork.createTxtFile(txtAllSpecsFilePath);
         // Write aop-ajc.xml spec strings to specListAll.txt
-        txtWork.writeTxtFile(txtAllSpecsFilePath, allSpecs);
+//        txtWork.writeTxtFile(txtAllSpecsFilePath, allSpecs);
 
         // 4. RECREATE XML file from specs.txt (which is located in my plugin's resources directory)
         // ** specs.txt is given for now, but later it will be updated programatically **
         // Read specs.txt and store lines in List<String> specsToInclude variable
-        List<String> specsToInclude = txtWork.getLines(specsPath);
+//        List<String> specsToInclude = txtWork.getLines(specsPath);
         // First remove old xml file to replace
         // (later found out this is unnecessary, but I suppose it can't hurt to assure old file is gone)
-        fileWork.deleteFile(xmlFilePath);
+//        fileWork.deleteFile(xmlFilePath);
         // Create new XML file with specsToInclude
-        try {
-            xmlWork.createXML(xmlFilePath, specsToInclude);
-        } catch (ParserConfigurationException e) {
-            e.printStackTrace();
-        } catch (TransformerException e) {
-            e.printStackTrace();
-        }
+//        try {
+//            xmlWork.createXML(xmlFilePath, specsToInclude);
+//        } catch (ParserConfigurationException e) {
+//            e.printStackTrace();
+//        } catch (TransformerException e) {
+//            e.printStackTrace();
+//        }
 
         // 5. REBUILD and REINSTALL JAR
         // Delete old jar
         // Create new jar in META-INF directory
-//        try {
-//            // createJar takes in path to jar and path to META-INF
+        try {
+            // createJar takes in path to jar and path to META-INF
 //            jarWork.createJar(jarFilePath, metaFilePath);
-//            jarWork.getManifest(metaFilePath);
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
+            jarWork.getManifest(metaFilePath);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
         // 6. RUN TESTS in the client plugin
     }
@@ -156,7 +156,8 @@ public class rebuildAgentMojo extends AbstractMojo {
         // takes in path to .jar file and path to META file (parent)
         public void createJar(String jarPath, String METAPath) throws IOException {
             Manifest manifest = new Manifest();
-            manifest.getMainAttributes().put(Attributes.Name.MANIFEST_VERSION, "1.0");
+
+//            manifest.getMainAttributes().put(Attributes.Name.MANIFEST_VERSION, "1.0");
             JarOutputStream target = new JarOutputStream(new FileOutputStream(jarPath), manifest);
             add(new File(METAPath), target);
             target.close();
@@ -196,7 +197,7 @@ public class rebuildAgentMojo extends AbstractMojo {
         // ^ to use existing manifest in META-INF instead of creating new default one (otherwise agent won't work)
         // Takes in path to manifest file, returns MANIFEST file
         public Manifest getManifest(String filePath) throws IOException {
-            File file = new File(filePath, JarFile.MANIFEST_NAME);
+            File file = new File(filePath, "MANIFEST.MF");
             if (file.exists()) {
                 InputStream inputStream = new FileInputStream(file);
                 try {
