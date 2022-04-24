@@ -52,64 +52,63 @@ public class rebuildAgentMojo extends AbstractMojo {
     public void execute() throws MojoExecutionException, MojoFailureException {
         getLog().info("Starting rebuildAgent execute() method...");
 
-        // CREATE FILE PATH VARIABLES
+        // 1. CREATE FILE PATH VARIABLES and INSTANTIATE CLASSES
         String jarFilePath = agentsPath + "/JavaMOPAgent.jar";
         String xmlFilePath = agentsPath + "/META-INF/aop-ajc.xml";
         String txtAllSpecsFilePath = "allSpecs.txt"; // store in client plugin root directory
         String metaFilePath = agentsPath + "/META-INF/";
 
-        // INSTANTIATE CLASSES
         JarWork jarWork = new JarWork(); // contains methods for working with .jar files
         XmlWork xmlWork = new XmlWork(); // contains methods for working with .xml files
         TxtWork txtWork = new TxtWork(); // contains methods for working with .txt files
         FileWork fileWork = new FileWork(); // contains general methods for all file types
 
-        // 1. EXTRACT JAR
+        // 2. EXTRACT JAR
         // Try extracting Jar file
-//        try {
-//            // Jar path followed by destination path
-//            jarWork.extractJar(jarFilePath, agentsPath);
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
-
-        // 2. CREATE specListAll.txt in client plugin root dir FROM aop-ajc.xml in agents
-        // Read aop-ajc.xml file
-        // Store specs from xml tags in List<String> allSpecs
-//        List<String> allSpecs = xmlWork.readXml(xmlFilePath);
-//        // Create allSpecs.txt and write allSpecs to it
-//        txtWork.createTxtFile(txtAllSpecsFilePath);
-//        // Write aop-ajc.xml spec strings to specListAll.txt
-//        txtWork.writeTxtFile(txtAllSpecsFilePath, allSpecs);
-
-        // 3. RECREATE XML file from specs.txt (which is located in my plugin's resources directory)
-        // ** specs.txt is given for now, but later it will be updated programatically **
-        // Read specs.txt and store lines in List<String> specsToInclude variable
-//        List<String> specsToInclude = txtWork.getLines(specsPath);
-        // First remove old xml file to replace
-        // (later found out this is unnecessary, but I suppose it can't hurt to assure old file is gone)
-//        fileWork.deleteFile(xmlFilePath);
-        // Try to create new XML file with specsToInclude
-//        try {
-//            xmlWork.createXML(xmlFilePath, specsToInclude);
-//        } catch (ParserConfigurationException e) {
-//            e.printStackTrace();
-//        } catch (TransformerException e) {
-//            e.printStackTrace();
-//        }
-
-        // 4. REBUILD JAR and install it
-        // Delete old jar
-        // Create new jar in META-INF directory
         try {
-            // createJar takes in path to jar and path to META-INF
-//            jarWork.createJar(jarFilePath, metaFilePath);
-            jarWork.getManifest(metaFilePath);
+            // Jar path followed by destination path
+            jarWork.extractJar(jarFilePath, agentsPath);
         } catch (IOException e) {
             e.printStackTrace();
         }
 
-        // 5. RUN TESTS in the client plugin
+        // 3. CREATE specListAll.txt in client plugin root dir FROM aop-ajc.xml in agents
+        // Read aop-ajc.xml file
+        // Store specs from xml tags in List<String> allSpecs
+        List<String> allSpecs = xmlWork.readXml(xmlFilePath);
+        // Create allSpecs.txt and write allSpecs to it
+        txtWork.createTxtFile(txtAllSpecsFilePath);
+        // Write aop-ajc.xml spec strings to specListAll.txt
+        txtWork.writeTxtFile(txtAllSpecsFilePath, allSpecs);
+
+        // 4. RECREATE XML file from specs.txt (which is located in my plugin's resources directory)
+        // ** specs.txt is given for now, but later it will be updated programatically **
+        // Read specs.txt and store lines in List<String> specsToInclude variable
+        List<String> specsToInclude = txtWork.getLines(specsPath);
+        // First remove old xml file to replace
+        // (later found out this is unnecessary, but I suppose it can't hurt to assure old file is gone)
+        fileWork.deleteFile(xmlFilePath);
+        // Create new XML file with specsToInclude
+        try {
+            xmlWork.createXML(xmlFilePath, specsToInclude);
+        } catch (ParserConfigurationException e) {
+            e.printStackTrace();
+        } catch (TransformerException e) {
+            e.printStackTrace();
+        }
+
+        // 5. REBUILD and REINSTALL JAR
+        // Delete old jar
+        // Create new jar in META-INF directory
+//        try {
+//            // createJar takes in path to jar and path to META-INF
+//            jarWork.createJar(jarFilePath, metaFilePath);
+//            jarWork.getManifest(metaFilePath);
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
+
+        // 6. RUN TESTS in the client plugin
     }
 
     // CLASSES
@@ -320,7 +319,7 @@ public class rebuildAgentMojo extends AbstractMojo {
             return xmlContent;
         }
         // Generates <aspectj> xml file from specs List
-        // Calls helper function writeXml
+        // calls helper function writeXml
         // reference: https://mkyong.com/java/how-to-create-xml-file-in-java-dom/
         public void createXML(String fileName, List<String> specList)
                 throws ParserConfigurationException, TransformerException {
