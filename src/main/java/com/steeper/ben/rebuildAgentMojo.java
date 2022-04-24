@@ -159,18 +159,6 @@ public class rebuildAgentMojo extends AbstractMojo {
         // https://stackoverflow.com/questions/1281229/how-to-use-jaroutputstream-to-create-a-jar-file/
         // takes in source path .jar file, target path, and Manifest file from getManifest() method
         public void createJar(String sourcePath, String targetPath, Manifest manifest_custom) throws IOException {
-//            Manifest manifest = new Manifest();
-            // Build manifest just like original extracted JavaMOPAgent.jar MANIFEST.MF file...
-//            manifest.getMainAttributes().put(Attributes.Name.MANIFEST_VERSION, "1.0");
-//            manifest.getMainAttributes().put(Attributes.Name.IMPLEMENTATION_TITLE, "org.aspectj.weaver");
-//            manifest.getMainAttributes().put(Attributes.Name.MAIN_CLASS, "org.aspectj.weaver.loadtime.Agent");
-//            manifest.getMainAttributes().put(Attributes.Name.IMPLEMENTATION_VERSION, "DEVELOPMENT");
-//            manifest.getMainAttributes().put(Attributes.Name.SPECIFICATION_VENDOR, "aspectj.org");
-//            manifest.getMainAttributes().put(Attributes.Name.EXTENSION_NAME, "org/aspectj/weaver/");
-//            manifest.getMainAttributes().put(Attributes.Name.SPECIFICATION_TITLE, "AspectJ Weaver Classes");
-//            manifest.getMainAttributes().put(Attributes.Name.SPECIFICATION_VERSION, "DEVELOPMENT");
-//            manifest.getMainAttributes().put(Attributes.Name.IMPLEMENTATION_VENDOR, "aspectj.org");
-
             JarOutputStream target = new JarOutputStream(new FileOutputStream(targetPath), manifest_custom);
             File inputDirectory = new File(sourcePath);
             for (File nestedFile : inputDirectory.listFiles())
@@ -183,7 +171,11 @@ public class rebuildAgentMojo extends AbstractMojo {
             try {
                 String name = (parents + source.getName()).replace("\\", "/");
 
-                if (source.isDirectory()) {
+                if (name.contains("JavaMOPAgent.jar")) {
+                    getLog().info("ignore this one!!");
+                }
+
+                if (source.isDirectory() && !name.contains("JavaMOPAgent.jar")) {
                     if (!name.isEmpty()) {
                         if (!name.endsWith("/"))
                             name += "/";
