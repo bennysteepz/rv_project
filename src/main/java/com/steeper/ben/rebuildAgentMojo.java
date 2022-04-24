@@ -104,7 +104,7 @@ public class rebuildAgentMojo extends AbstractMojo {
             // Get the manifest and pass it into the createJar() method
             Manifest manifest = jarWork.getManifest(metaFilePath);
             // createJar takes in path to jar, path to META-INF and Manifest fil
-            jarWork.createJar(agentsPath + "/", "JavaMOPAgent.jar", manifest);
+            jarWork.createJar(agentsPath + "/", jarFilePath, manifest);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -173,6 +173,7 @@ public class rebuildAgentMojo extends AbstractMojo {
                 target.closeEntry();
                 for (File nestedFile : source.listFiles()) {
                     add(nestedFile, target);
+                    getLog().info("adding a nested file to target...");
                 }
             } else {
                 JarEntry entry = new JarEntry(name);
