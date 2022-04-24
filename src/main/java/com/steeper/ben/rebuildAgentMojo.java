@@ -58,6 +58,7 @@ public class rebuildAgentMojo extends AbstractMojo {
         String txtAllSpecsFilePath = "allSpecs.txt"; // store in client plugin root directory
         String metaFilePath = agentsPath + "/META-INF/";
         String manifestPath = agentsPath + "/META-INF/MANIFEST.MF";
+        String extractedPath = agentsPath + "/extracted"; // to be created before extracting jar
 
         JarWork jarWork = new JarWork(); // contains methods for working with .jar files
         XmlWork xmlWork = new XmlWork(); // contains methods for working with .xml files
@@ -65,13 +66,15 @@ public class rebuildAgentMojo extends AbstractMojo {
         FileWork fileWork = new FileWork(); // contains general methods for all file types
 
         // 2. EXTRACT JAR
+        // Make directory in agents called "extracted" to extract file inside of
+        new File(extractedPath).mkdirs();
         // Try extracting Jar file
-//        try {
-//            // Jar path followed by destination path
-//            jarWork.extractJar(jarFilePath, agentsPath);
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
+        try {
+            // Jar path followed by destination path
+            jarWork.extractJar(jarFilePath, extractedPath);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
         // 3. CREATE specListAll.txt in client plugin root dir FROM aop-ajc.xml in agents
         // Read aop-ajc.xml file
@@ -101,16 +104,16 @@ public class rebuildAgentMojo extends AbstractMojo {
         // 5. REBUILD and REINSTALL JAR
         // Delete old jar
         // Create new jar in META-INF directory
-        try {
-            // Get the current manifest and pass it into the createJar() method
-            Manifest manifest = jarWork.getManifest(metaFilePath);
-            // remove the manifest before creating jar to avoid duplicate manifest error
-            fileWork.deleteFile(manifestPath);
-            // createJar takes in path to jar, path to META-INF and cached Manifest file
-            jarWork.createJar(agentsPath, jarFilePath, manifest);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+//        try {
+//            // Get the current manifest and pass it into the createJar() method
+//            Manifest manifest = jarWork.getManifest(metaFilePath);
+//            // remove the manifest before creating jar to avoid duplicate manifest error
+//            fileWork.deleteFile(manifestPath);
+//            // createJar takes in path to jar, path to META-INF and cached Manifest file
+//            jarWork.createJar(agentsPath, "/..output3.txt", manifest);
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
 
         // 6. RUN TESTS in the client plugin
     }
@@ -171,11 +174,7 @@ public class rebuildAgentMojo extends AbstractMojo {
             try {
                 String name = (parents + source.getName()).replace("\\", "/");
 
-                if (name.contains("JavaMOPAgent.jar")) {
-                    getLog().info("ignore this one!!");
-                }
-
-                if (source.isDirectory() && !name.contains("JavaMOPAgent.jar")) {
+                if (source.isDirectory()) {
                     if (!name.isEmpty()) {
                         if (!name.endsWith("/"))
                             name += "/";
