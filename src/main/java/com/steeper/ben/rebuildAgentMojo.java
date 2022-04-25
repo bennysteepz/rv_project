@@ -411,20 +411,21 @@ public class rebuildAgentMojo extends AbstractMojo {
         // Install - uses "Maven Invocation API" to run "mvn install:...agent.jar..."
         // referenced: https://maven.apache.org/shared/maven-invoker/usage.html
         private void invokeMaven(String pomPath) {
-            Invoker invoker = new DefaultInvoker();
-            getLog().info("Maven home: " + invoker.getMavenHome().toString());
-//            invoker.setMavenHome(invoker.getMavenHome());
 
-            InvocationRequest request = new DefaultInvocationRequest();
+//            InvocationRequest request = new DefaultInvocationRequest();
 //            request.setPomFile(new File(pomPath));
-            request.setGoals(Collections.singletonList("install"));
-
-            try {
-                invoker.execute(request);
-            }
-            catch (MavenInvocationException e) {
-                e.printStackTrace();
-            }
+//            request.setGoals(Collections.singletonList("install"));
+//
+//            Invoker invoker = new DefaultInvoker();
+//            getLog().info("Maven home: " + invoker.getMavenHome().toString());
+//            invoker.setMavenHome(invoker.getMavenHome());
+//
+//            try {
+//                invoker.execute(request);
+//            }
+//            catch (MavenInvocationException e) {
+//                e.printStackTrace();
+//            }
         }
     }
 }
