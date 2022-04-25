@@ -7,6 +7,12 @@ import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.project.MavenProject;
+import org.apache.maven.shared.invoker.DefaultInvocationRequest;
+import org.apache.maven.shared.invoker.DefaultInvoker;
+import org.apache.maven.shared.invoker.InvocationRequest;
+import org.apache.maven.shared.invoker.InvocationResult;
+import org.apache.maven.shared.invoker.Invoker;
+import org.apache.maven.shared.invoker.MavenInvocationException;
 
 import java.io.*;
 import java.util.List;
@@ -16,6 +22,8 @@ import java.util.Scanner;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.ArrayList;
+import java.util.Properties;
+import java.util.Collections;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -102,7 +110,7 @@ public class rebuildAgentMojo extends AbstractMojo {
             e.printStackTrace();
         }
 
-        // 5. REBUILD and REINSTALL JAR
+        // 5. REBUILD the JAR
         // Create new jar in agents directory
         try {
             // Get the current manifest and pass it into the createJar() method
@@ -115,7 +123,8 @@ public class rebuildAgentMojo extends AbstractMojo {
             e.printStackTrace();
         }
 
-        // 6. RUN TESTS in the client plugin
+        // 6. RUN INSTALL AND TESTS in the client plugin
+
     }
 
     // CLASSES
@@ -396,6 +405,23 @@ public class rebuildAgentMojo extends AbstractMojo {
                 getLog().info("Deleted the file: " + myObj.getName());
             } else {
                 getLog().info("Failed to delete the file.");
+            }
+        }
+        // Install - uses "Maven Invocation API" to run "mvn install:...agent.jar..."
+        // referenced: https://maven.apache.org/shared/maven-invoker/usage.html
+        private void invokeMaven(String pomPath) {
+            InvocationRequest request = new DefaultInvocationRequest();
+            request.setPomFile( new File( pomPath ) );
+            request.setGoals( Collections.singletonList("install"));
+
+            Invoker invoker = new DefaultInvoker();
+//            invoker.setMavenHome(new File("/usr"));
+
+            try {
+                invoker.execute( request );
+            }
+            catch (MavenInvocationException e) {
+                e.printStackTrace();
             }
         }
     }

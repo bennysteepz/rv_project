@@ -232,5 +232,11 @@
       <type>jar</type>
       <version>2.10</version>
     </dependency>
+    <dependency>
+      <groupId>org.apache.maven.shared</groupId>
+      <artifactId>maven-invoker</artifactId>
+      <type>jar</type>
+      <version>3.0.1</version>
+    </dependency>
   </dependencies>
 </plugin>
