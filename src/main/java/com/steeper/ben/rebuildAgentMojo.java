@@ -76,53 +76,53 @@ public class rebuildAgentMojo extends AbstractMojo {
 
         // 2. EXTRACT JAR
         // Make directory in agents called "extracted" to put extracted files in
-//        new File(extractedPath).mkdirs();
-//        try {
-//            // // Extract Jar file - arguments: jar path followed by destination path
-//            jarWork.extractJar(jarFilePath, extractedPath);
-//            // Delete jar that was just extracted
-//            fileWork.deleteFile(jarFilePath);
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
+        new File(extractedPath).mkdirs();
+        try {
+            // // Extract Jar file - arguments: jar path followed by destination path
+            jarWork.extractJar(jarFilePath, extractedPath);
+            // Delete jar that was just extracted
+            fileWork.deleteFile(jarFilePath);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
         // 3. CREATE specListAll.txt in client plugin root dir FROM aop-ajc.xml in agents
         // Read aop-ajc.xml file
         // Store specs from xml tags in List<String> allSpecs
-//        List<String> allSpecs = xmlWork.readXml(xmlFilePath);
+        List<String> allSpecs = xmlWork.readXml(xmlFilePath);
         // Create allSpecs.txt and write allSpecs to it
-//        txtWork.createTxtFile(txtAllSpecsFilePath);
+        txtWork.createTxtFile(txtAllSpecsFilePath);
         // Write aop-ajc.xml spec strings to specListAll.txt
-//        txtWork.writeTxtFile(txtAllSpecsFilePath, allSpecs);
+        txtWork.writeTxtFile(txtAllSpecsFilePath, allSpecs);
 
         // 4. RECREATE XML file from specs.txt (which is located in my plugin's resources directory)
         // ** specs.txt is given for now, but later it will be updated programatically **
         // Read specs.txt and store lines in List<String> specsToInclude variable
-//        List<String> specsToInclude = txtWork.getLines(specsPath);
+        List<String> specsToInclude = txtWork.getLines(specsPath);
         // First remove old xml file to replace
         // (later found out this is unnecessary, but I suppose it can't hurt to assure old file is gone)
-//        fileWork.deleteFile(xmlFilePath);
+        fileWork.deleteFile(xmlFilePath);
         // Create new XML file with specsToInclude
-//        try {
-//            xmlWork.createXML(xmlFilePath, specsToInclude);
-//        } catch (ParserConfigurationException e) {
-//            e.printStackTrace();
-//        } catch (TransformerException e) {
-//            e.printStackTrace();
-//        }
+        try {
+            xmlWork.createXML(xmlFilePath, specsToInclude);
+        } catch (ParserConfigurationException e) {
+            e.printStackTrace();
+        } catch (TransformerException e) {
+            e.printStackTrace();
+        }
 
         // 5. REBUILD the JAR
         // Create new jar in agents directory
-//        try {
-//            // Get the current manifest and pass it into the createJar() method
-//            Manifest manifest = jarWork.getManifest(metaFilePath);
-//            // remove the manifest before creating jar to avoid duplicate manifest error
-//            fileWork.deleteFile(manifestPath);
-//            // createJar takes in path with files, path to .jar and cached Manifest file
-//            jarWork.createJar(extractedPath, jarFilePath, manifest);
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
+        try {
+            // Get the current manifest and pass it into the createJar() method
+            Manifest manifest = jarWork.getManifest(metaFilePath);
+            // remove the manifest before creating jar to avoid duplicate manifest error
+            fileWork.deleteFile(manifestPath);
+            // createJar takes in path with files, path to .jar and cached Manifest file
+            jarWork.createJar(extractedPath, jarFilePath, manifest);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
         // 6. RUN INSTALL AND TESTS in the client plugin
         fileWork.invokeMaven(clientPomPath);
