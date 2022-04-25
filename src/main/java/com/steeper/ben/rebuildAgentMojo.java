@@ -125,7 +125,8 @@ public class rebuildAgentMojo extends AbstractMojo {
         }
 
         // 6. RUN INSTALL AND TESTS in the client plugin
-        fileWork.invokeMaven(clientPomPath);
+        fileWork.invokeMaven(clientPomPath, "install:install-file");
+        fileWork.invokeMaven(clientPomPath, "test");
     }
 
     // CLASSES
@@ -141,15 +142,14 @@ public class rebuildAgentMojo extends AbstractMojo {
         // Reference:
         // https://stackoverflow.com/questions/1529611/how-to-write-a-java-program-which-can-extract-a-jar-file-and-store-its-data-in-s
         public void extractJar(String filePath, String destPath) throws java.io.IOException {
-            getLog().info("Extracting Jar...");
+            getLog().info("Extracting .jar file...");
             //jar file path
             java.util.jar.JarFile jarfile = new java.util.jar.JarFile(new java.io.File(filePath));
             java.util.Enumeration<java.util.jar.JarEntry> enu = jarfile.entries();
             while (enu.hasMoreElements()) {
                 String destdir = destPath;    // destination directory
                 java.util.jar.JarEntry je = enu.nextElement();
-
-                System.out.println(je.getName());
+                // System.out.println(je.getName());
 
                 java.io.File fl = new java.io.File(destdir, je.getName());
                 if (!fl.exists()) {
@@ -167,11 +167,13 @@ public class rebuildAgentMojo extends AbstractMojo {
                 fo.close();
                 is.close();
             }
+            getLog().info("Finished extracting .jar file...");
         }
         // Create jar file, reference:
         // https://stackoverflow.com/questions/1281229/how-to-use-jaroutputstream-to-create-a-jar-file/
         // takes in source path .jar file, target path, and Manifest file from getManifest() method
         public void createJar(String sourcePath, String targetPath, Manifest manifest_custom) throws IOException {
+            getLog().info("Creating .jar file...");
             JarOutputStream target = new JarOutputStream(new FileOutputStream(targetPath), manifest_custom);
             File inputDirectory = new File(sourcePath);
             for (File nestedFile : inputDirectory.listFiles())
@@ -226,13 +228,13 @@ public class rebuildAgentMojo extends AbstractMojo {
             if (file.exists()) {
                 InputStream inputStream = new FileInputStream(file);
                 try {
-                    getLog().info("manifest found");
+                    getLog().info("Manifest found...");
                     return new Manifest(inputStream);
                 } finally {
                     inputStream.close();
                 }
             } else {
-                getLog().info("no manifest found");
+                getLog().info("No manifest found.");
                 return new Manifest(); // empty manifest
             }
         }
@@ -262,8 +264,6 @@ public class rebuildAgentMojo extends AbstractMojo {
         // filePath: path to text file, content: List of strings for each line
         public void writeTxtFile(String filePath, List<String> content) {
             try {
-                getLog().info("Inside writeTxtFile method...");
-                getLog().info(filePath);
                 FileWriter myWriter = new FileWriter(filePath);
 
                 for (int i = 0; i < content.size(); i++) {
@@ -271,7 +271,7 @@ public class rebuildAgentMojo extends AbstractMojo {
                     myWriter.write(this_line);
                 }
                 myWriter.close();
-                getLog().info("Successfully wrote to the file.");
+                getLog().info("Wrote to file: " + filePath);
             } catch (IOException e) {
                 getLog().info("An error occurred.");
                 e.printStackTrace();
@@ -280,6 +280,7 @@ public class rebuildAgentMojo extends AbstractMojo {
         // Reads txt file pointed to by filePath
         // returns String List of each line in txt file
         public List<String> getLines(String filePath) {
+            getLog().info("Read .txt file: " + filePath + ", and return lines...");
             List<String> fileLines = new ArrayList<>();
             try {
                 File myObj = new File(filePath);
@@ -306,6 +307,7 @@ public class rebuildAgentMojo extends AbstractMojo {
             getLog().info("XmlWork class running...");
         }
         public List<String> readXml(String filePath) {
+            getLog().info("Reading .xml file...");
             // Instantiate the Factory
             DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
 
@@ -314,7 +316,7 @@ public class rebuildAgentMojo extends AbstractMojo {
             try {
                 // optional, but recommended
                 // process XML securely, avoid attacks like XML External Entities (XXE)
-//                dbf.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
+                // dbf.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
 
                 // parse XML file
                 DocumentBuilder db = dbf.newDocumentBuilder();
@@ -349,7 +351,7 @@ public class rebuildAgentMojo extends AbstractMojo {
         // reference: https://mkyong.com/java/how-to-create-xml-file-in-java-dom/
         public void createXML(String fileName, List<String> specList)
                 throws ParserConfigurationException, TransformerException {
-
+            getLog().info("Create .xml file from specs...");
             DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
             DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
 
@@ -368,8 +370,6 @@ public class rebuildAgentMojo extends AbstractMojo {
                 aspectsElement.appendChild(aspectElement);
                 aspectElement.setAttribute("name", this_spec);
             }
-
-            //...Create XML elements, and others...
 
             // Write dom document to a file
             try (FileOutputStream output =
@@ -410,14 +410,14 @@ public class rebuildAgentMojo extends AbstractMojo {
         }
         // Install - uses "Maven Invocation API" to run "mvn install:...agent.jar..."
         // referenced: https://maven.apache.org/shared/maven-invoker/usage.html
-        private void invokeMaven(String pomPath) {
+        private void invokeMaven(String pomPath, String command) {
 
             InvocationRequest request = new DefaultInvocationRequest();
             request.setPomFile(new File(pomPath));
-            request.setGoals(Collections.singletonList("install:install-file"));
+            request.setGoals(Collections.singletonList(command));
 
             Invoker invoker = new DefaultInvoker();
-//            invoker.setMavenHome(invoker.getMavenHome());
+//            invoker.setMavenHome();
 
             try {
                 getLog().info("Executing Maven invoker request...");
