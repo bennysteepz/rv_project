@@ -421,12 +421,12 @@ public class rebuildAgentMojo extends AbstractMojo {
 //            getLog().info("Maven home: " + invoker.getMavenHome().toString());
 //            invoker.setMavenHome(invoker.getMavenHome());
 
-//            try {
-//                invoker.execute(request);
-//            }
-//            catch (MavenInvocationException e) {
-//                e.printStackTrace();
-//            }
+            try {
+                invoker.execute(request);
+            }
+            catch (MavenInvocationException e) {
+                e.printStackTrace();
+            }
         }
     }
 }
