@@ -67,7 +67,7 @@ public class rebuildAgentMojo extends AbstractMojo {
         String metaFilePath = agentsPath + "/extracted/META-INF/";
         String manifestPath = agentsPath + "/extracted/META-INF/MANIFEST.MF";
         String extractedPath = agentsPath + "/extracted"; // to be created before extracting jar
-        String clientPomPath = "pom.xml"; // get this programmatically later, for now it's just hard coded
+        String clientPomPath = "/pom.xml"; // get this programmatically later, for now it's just hard coded
 
         JarWork jarWork = new JarWork(); // contains methods for working with .jar files
         XmlWork xmlWork = new XmlWork(); // contains methods for working with .xml files
@@ -412,16 +412,15 @@ public class rebuildAgentMojo extends AbstractMojo {
         // referenced: https://maven.apache.org/shared/maven-invoker/usage.html
         private void invokeMaven(String pomPath) {
             InvocationRequest request = new DefaultInvocationRequest();
-            request.setPomFile( new File( pomPath ) );
-            request.setGoals( Collections.singletonList("install"));
-//            request.setGoals(  )
+            request.setPomFile(new File(pomPath));
+            request.setGoals(Collections.singletonList("install"));
 
             Invoker invoker = new DefaultInvoker();
-//            invoker.setMavenHome(new File("/usr"));
+            invoker.setMavenHome(invoker.getMavenHome());
             getLog().info("Maven home: " + invoker.getMavenHome().toString());
 
             try {
-                invoker.execute( request );
+                invoker.execute(request);
             }
             catch (MavenInvocationException e) {
                 e.printStackTrace();
