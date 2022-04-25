@@ -83,8 +83,7 @@
 <!--                            <artifactId>javamop-agent</artifactId>-->
 <!--                            <version>1.0</version>-->
 <!--                            <packaging>jar</packaging>-->
-<!--&lt;!&ndash;                            <file>${project.basedir}/lib/foo-42.jar</file>&ndash;&gt;-->
-<!--                            <file>${project.build.directory}..agents/JavaMOPAgent.jar</file>-->
+<!--                            <file>${project.basedir}..agents/JavaMOPAgent.jar</file>-->
 <!--                        </configuration>-->
 <!--                    </execution>-->
 <!--                </executions>-->
