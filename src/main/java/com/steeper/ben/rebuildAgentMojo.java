@@ -418,8 +418,8 @@ public class rebuildAgentMojo extends AbstractMojo {
 
             Invoker invoker = new DefaultInvoker();
             getLog().info("maven homeeee:");
-            getLog().info("Maven home: " + invoker.getMavenHome().toString());
-            invoker.setMavenHome(invoker.getMavenHome());
+//            getLog().info("Maven home: " + invoker.getMavenHome().toString());
+//            invoker.setMavenHome(invoker.getMavenHome());
 
 //            try {
 //                invoker.execute(request);
