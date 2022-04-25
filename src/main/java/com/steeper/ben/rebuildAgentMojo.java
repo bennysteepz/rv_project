@@ -67,7 +67,7 @@ public class rebuildAgentMojo extends AbstractMojo {
         String metaFilePath = agentsPath + "/extracted/META-INF/";
         String manifestPath = agentsPath + "/extracted/META-INF/MANIFEST.MF";
         String extractedPath = agentsPath + "/extracted"; // to be created before extracting jar
-        String clientPomPath = "../toy-app"; // get this programmatically later, for now it's just hard coded
+        String clientPomPath = "../toy-app/pom.xml"; // get this programmatically later, for now it's just hard coded
 
         JarWork jarWork = new JarWork(); // contains methods for working with .jar files
         XmlWork xmlWork = new XmlWork(); // contains methods for working with .xml files
