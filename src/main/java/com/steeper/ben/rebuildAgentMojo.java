@@ -414,14 +414,13 @@ public class rebuildAgentMojo extends AbstractMojo {
 
             InvocationRequest request = new DefaultInvocationRequest();
             request.setPomFile(new File(pomPath));
-            request.setGoals(Collections.singletonList("install"));
+            request.setGoals(Collections.singletonList("test"));
 
             Invoker invoker = new DefaultInvoker();
-            getLog().info("maven homeeee:");
-//            getLog().info("Maven home: " + invoker.getMavenHome().toString());
 //            invoker.setMavenHome(invoker.getMavenHome());
 
             try {
+                getLog().info("Executing Maven invoker request...");
                 invoker.execute(request);
             }
             catch (MavenInvocationException e) {
