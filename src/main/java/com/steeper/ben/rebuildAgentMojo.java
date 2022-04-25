@@ -414,7 +414,7 @@ public class rebuildAgentMojo extends AbstractMojo {
 
             InvocationRequest request = new DefaultInvocationRequest();
             request.setPomFile(new File(pomPath));
-            request.setGoals(Collections.singletonList("test"));
+            request.setGoals(Collections.singletonList("install:install-file"));
 
             Invoker invoker = new DefaultInvoker();
 //            invoker.setMavenHome(invoker.getMavenHome());
