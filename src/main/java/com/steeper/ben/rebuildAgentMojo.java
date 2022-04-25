@@ -239,6 +239,7 @@ public class rebuildAgentMojo extends AbstractMojo {
             }
         }
     }
+
     // CLASS with various methods to work with .txt files
     public class TxtWork {
 
