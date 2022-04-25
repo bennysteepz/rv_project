@@ -413,7 +413,7 @@ public class rebuildAgentMojo extends AbstractMojo {
         private void invokeMaven(String pomPath) {
 
             InvocationRequest request = new DefaultInvocationRequest();
-//            request.setPomFile(new File(pomPath));
+            request.setPomFile(new File(pomPath));
 //            request.setGoals(Collections.singletonList("install"));
 //
 //            Invoker invoker = new DefaultInvoker();
