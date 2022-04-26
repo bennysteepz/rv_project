@@ -125,8 +125,8 @@ public class rebuildAgentMojo extends AbstractMojo {
         }
 
         // 6. INSTALL JAR AGENT AND RUN TESTS in the client plugin
-        fileWork.invokeMaven(clientPomPath, "install:install-file");
-        fileWork.invokeMaven(clientPomPath, "test");
+//        fileWork.invokeMaven(clientPomPath, "install:install-file");
+//        fileWork.invokeMaven(clientPomPath, "test");
     }
 
     // CLASSES
