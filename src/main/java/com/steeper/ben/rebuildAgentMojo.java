@@ -78,7 +78,7 @@ public class rebuildAgentMojo extends AbstractMojo {
         // Make directory in agents called "extracted" to put extracted files in
         new File(extractedPath).mkdirs();
         try {
-            // // Extract Jar file - arguments: jar path followed by destination path
+            // Extract Jar file - arguments: jar path followed by destination path
             jarWork.extractJar(jarFilePath, extractedPath);
             // Delete jar that was just extracted
             fileWork.deleteFile(jarFilePath);
@@ -150,8 +150,8 @@ public class rebuildAgentMojo extends AbstractMojo {
                 String destdir = destPath;    // destination directory
                 java.util.jar.JarEntry je = enu.nextElement();
                 // System.out.println(je.getName());
-
                 java.io.File fl = new java.io.File(destdir, je.getName());
+
                 if (!fl.exists()) {
                     fl.getParentFile().mkdirs();
                     fl = new java.io.File(destdir, je.getName());
@@ -307,6 +307,7 @@ public class rebuildAgentMojo extends AbstractMojo {
         public void main(String[] args) {
             getLog().info("XmlWork class running...");
         }
+
         public List<String> readXml(String filePath) {
             getLog().info("Reading .xml file...");
             // Instantiate the Factory
