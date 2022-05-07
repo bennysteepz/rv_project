@@ -6,6 +6,7 @@ import org.apache.maven.plugin.MojoFailureException;
 import org.apache.maven.plugins.annotations.LifecyclePhase;
 import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
+import org.apache.maven.plugins.annotations.ResolutionScope;
 import org.apache.maven.project.MavenProject;
 import org.apache.maven.shared.invoker.DefaultInvocationRequest;
 import org.apache.maven.shared.invoker.DefaultInvoker;
@@ -42,8 +43,8 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 
-@Mojo(name = "rebuildAgent", defaultPhase = LifecyclePhase.INITIALIZE)
-public class rebuildAgentMojo extends AbstractMojo {
+@Mojo(name = "rebuildAgent", requiresDependencyResolution = ResolutionScope.TEST)
+public class RebuildAgentMojo extends AbstractMojo {
 
     @Parameter(property = "project", readonly = false)
     private MavenProject project;
@@ -126,7 +127,6 @@ public class rebuildAgentMojo extends AbstractMojo {
 
         // 6. INSTALL JAR AGENT AND RUN TESTS in the client plugin
         fileWork.invokeMaven(clientPomPath, "install:install-file");
-        fileWork.invokeMaven(clientPomPath, "test");
     }
 
     // CLASSES
