@@ -21,6 +21,7 @@ import java.util.jar.*;
 import java.io.IOException;
 import java.util.Scanner;
 import java.util.List;
+import java.util.HashSet;
 import java.util.ArrayList;
 import java.util.ArrayList;
 import java.util.Properties;
@@ -57,6 +58,9 @@ public class RebuildAgentMojo extends AbstractMojo {
     @Parameter(property = "specsPath", defaultValue = "/src/main/resources/specs.txt")
     private String specsPath;
 
+    @Parameter(property = "affectedClassesPath", defaultValue = "/src/main/resources/affectedClasses.txt")
+    private String affectedClassesPath;
+    
     @Override
     public void execute() throws MojoExecutionException, MojoFailureException {
         getLog().info("Starting rebuildAgent execute() method...");
@@ -91,16 +95,26 @@ public class RebuildAgentMojo extends AbstractMojo {
         // Read aop-ajc.xml file
         // Store specs from xml tags in List<String> allSpecs
         List<String> allSpecs = xmlWork.readXml(xmlFilePath);
-        // Create allSpecs.txt and write allSpecs to it
+	List<String> affectedClasses = txtWork.getLines(affectedClassesPath);
+	HashSet<String> affectedSpecs = getAffectedSpecs(allSpecs, affectedClasses);
+	List<String> specsToInclude = new ArrayList<String>();
+	for (String spec : affectedSpecs) {
+	    specsToInclude.add(spec);
+	}
+
+	
+	// Create allSpecs.txt and write allSpecs to it
         txtWork.createTxtFile(txtAllSpecsFilePath);
         // Write aop-ajc.xml spec strings to specListAll.txt
         txtWork.writeTxtFile(txtAllSpecsFilePath, allSpecs);
 
         // 4. RECREATE XML file from specs.txt (which is located in my plugin's resources directory)
         // ** specs.txt is given for now, but later it will be updated programatically **
-        // Read specs.txt and store lines in List<String> specsToInclude variable
-        List<String> specsToInclude = txtWork.getLines(specsPath);
-        // First remove old xml file to replace
+
+	// Read specs.txt and store lines in List<String> specsToInclude variable
+        //List<String> specsToInclude = txtWork.getLines(specsPath);
+
+	// First remove old xml file to replace
         // (later found out this is unnecessary, but I suppose it can't hurt to assure old file is gone)
         fileWork.deleteFile(xmlFilePath);
         // Create new XML file with specsToInclude
@@ -129,6 +143,34 @@ public class RebuildAgentMojo extends AbstractMojo {
         fileWork.invokeMaven(clientPomPath, "install:install-file");
     }
 
+    private HashSet<String> getAffectedSpecs(List<String> aspects, List<String> affectedClasses) {
+	String runtimeMonitor = agentsPath + "../props/classes/mop/MultiSpec_1RuntimeMonitor.java";
+	try {
+	    ArrayList<String> args = new ArrayList<String>();
+	    args.add("java");
+	    args.add("org.aspectj.tools.ajc.Main");
+	    args.add("-1.6");
+	    args.add("-d");
+	    args.add(".");
+	    for (String aspect : aspects) {
+		String aspectChop = aspect.substring(4, aspect.length() - 1);
+		String aspectPath = agentsPath + "../props/" +  aspectChop + ".aj";
+		args.add(aspectPath);
+	    }
+	    args.add(runtimeMonitor);
+	    args.add("-Xlint:ignore");
+	    for (String affectedClass : affectedClasses) {
+		args.add(affectedClass);
+	    }
+	    args.add("-showWeaveInfo");
+	    return Util.getAffectedSpecs(false, args.toArray(new String[0]));
+	} catch (IOException e) {
+	    e.printStackTrace();
+	    return new HashSet<String>();
+	}
+
+    }
+    
     // CLASSES
     // JarWork class includes 2 methods: ExtractJar and CreateJar
     // Both methods take in a file path
@@ -368,6 +410,9 @@ public class RebuildAgentMojo extends AbstractMojo {
             // Loop through every spec in specsList and write it to xml file
             for (int i = 0; i < specList.size(); i++) {
                 String this_spec = specList.get(i);
+
+		System.out.println(this_spec);
+		
                 Element aspectElement = doc.createElement("aspect");
                 aspectsElement.appendChild(aspectElement);
                 aspectElement.setAttribute("name", this_spec);

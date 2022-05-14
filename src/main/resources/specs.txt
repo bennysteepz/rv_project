@@ -1,3 +1,4 @@
+mop.BaseAspect
 mop.MulticastSocket_TTLMonitorAspect
 mop.Map_ItselfAsValueMonitorAspect
 mop.String_UseStringBuilderMonitorAspect
