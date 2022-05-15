@@ -1,1 +1,4 @@
 src/main/java/edu/cornell/cs6156/App.java
+src/main/java/edu/cornell/cs6156/App2.java
+src/main/java/edu/cornell/cs6156/App3.java
+src/main/java/edu/cornell/cs6156/App4.java
