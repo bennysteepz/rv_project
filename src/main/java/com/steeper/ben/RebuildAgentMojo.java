@@ -98,11 +98,8 @@ public class RebuildAgentMojo extends AbstractMojo {
         List<String> affectedClasses = txtWork.getLines(affectedClassesPath);
         HashSet<String> affectedSpecs = getAffectedSpecs(allSpecs, affectedClasses);
         List<String> specsToInclude = new ArrayList<String>();
-        getLog().info("BEFORE SPEC LOG");
         for (String spec : affectedSpecs) {
             specsToInclude.add(spec);
-            getLog().info("LOG SPEC BELOWW:");
-            getLog().info(spec);
         }
 
 	
@@ -156,14 +153,16 @@ public class RebuildAgentMojo extends AbstractMojo {
 	    args.add("-d");
 	    args.add(".");
 	    for (String aspect : aspects) {
-		String aspectChop = aspect.substring(4, aspect.length() - 1);
-		String aspectPath = agentsPath + "../props/" +  aspectChop + ".aj";
-		args.add(aspectPath);
+		    String aspectChop = aspect.substring(4, aspect.length() - 1);
+		    String aspectPath = agentsPath + "../props/" +  aspectChop + ".aj";
+		    args.add(aspectPath);
 	    }
 	    args.add(runtimeMonitor);
 	    args.add("-Xlint:ignore");
 	    for (String affectedClass : affectedClasses) {
-		args.add(affectedClass);
+		    args.add(affectedClass);
+            getLog().info("LOG SPEC BELOWW:");
+            getLog().info(affectedClass);
 	    }
 	    args.add("-showWeaveInfo");
 	    return Util.getAffectedSpecs(false, args.toArray(new String[0]));
