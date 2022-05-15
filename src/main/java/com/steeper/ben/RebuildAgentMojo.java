@@ -99,6 +99,8 @@ public class RebuildAgentMojo extends AbstractMojo {
         HashSet<String> affectedSpecs = getAffectedSpecs(allSpecs, affectedClasses);
         List<String> specsToInclude = new ArrayList<String>();
         for (String spec : affectedSpecs) {
+            getLog().info("log spec below!!:");
+            getLog().info(spec);
             specsToInclude.add(spec);
         }
 
@@ -161,8 +163,6 @@ public class RebuildAgentMojo extends AbstractMojo {
 	    args.add("-Xlint:ignore");
 	    for (String affectedClass : affectedClasses) {
 		    args.add(affectedClass);
-            getLog().info("LOG SPEC BELOWW:");
-            getLog().info(affectedClass);
 	    }
 	    args.add("-showWeaveInfo");
 	    return Util.getAffectedSpecs(false, args.toArray(new String[0]));
