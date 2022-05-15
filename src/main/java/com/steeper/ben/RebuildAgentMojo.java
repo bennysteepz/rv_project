@@ -95,12 +95,13 @@ public class RebuildAgentMojo extends AbstractMojo {
         // Read aop-ajc.xml file
         // Store specs from xml tags in List<String> allSpecs
         List<String> allSpecs = xmlWork.readXml(xmlFilePath);
-	List<String> affectedClasses = txtWork.getLines(affectedClassesPath);
-	HashSet<String> affectedSpecs = getAffectedSpecs(allSpecs, affectedClasses);
-	List<String> specsToInclude = new ArrayList<String>();
-	for (String spec : affectedSpecs) {
-	    specsToInclude.add(spec);
-	}
+        List<String> affectedClasses = txtWork.getLines(affectedClassesPath);
+        HashSet<String> affectedSpecs = getAffectedSpecs(allSpecs, affectedClasses);
+        List<String> specsToInclude = new ArrayList<String>();
+        for (String spec : affectedSpecs) {
+            specsToInclude.add(spec);
+            getLog().info(spec);
+        }
 
 	
 	// Create allSpecs.txt and write allSpecs to it
@@ -139,7 +140,7 @@ public class RebuildAgentMojo extends AbstractMojo {
             e.printStackTrace();
         }
 
-        // 6. INSTALL JAR AGENT AND RUN TESTS in the client plugin
+        // 6. INSTALL JAR AGENT in the client plugin
         fileWork.invokeMaven(clientPomPath, "install:install-file");
     }
 
