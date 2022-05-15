@@ -98,8 +98,10 @@ public class RebuildAgentMojo extends AbstractMojo {
         List<String> affectedClasses = txtWork.getLines(affectedClassesPath);
         HashSet<String> affectedSpecs = getAffectedSpecs(allSpecs, affectedClasses);
         List<String> specsToInclude = new ArrayList<String>();
+        getLog().info("BEFORE SPEC LOG");
         for (String spec : affectedSpecs) {
             specsToInclude.add(spec);
+            getLog().info("LOG SPEC BELOWW:");
             getLog().info(spec);
         }
 
