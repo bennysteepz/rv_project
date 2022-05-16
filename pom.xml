@@ -71,8 +71,8 @@
                     <version>3.3</version>
                     <!-- skip descriptor error -->
                     <configuration>
-<!--                        <skipErrorNoDescriptorsFound>true</skipErrorNoDescriptorsFound>-->
-<!--                        <skipDescriptor>true</skipDescriptor>-->
+                        <skipErrorNoDescriptorsFound>true</skipErrorNoDescriptorsFound>
+                        <skipDescriptor>true</skipDescriptor>
                     </configuration>
                 </plugin>
 
