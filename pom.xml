@@ -70,10 +70,10 @@
                     <artifactId>maven-plugin-plugin</artifactId>
                     <version>3.4</version>
                     <!-- skip descriptor error -->
-<!--                    <configuration>-->
-<!--                        <skipErrorNoDescriptorsFound>true</skipErrorNoDescriptorsFound>-->
+                    <configuration>
+                        <skipErrorNoDescriptorsFound>true</skipErrorNoDescriptorsFound>
 <!--                        <skipDescriptor>true</skipDescriptor>-->
-<!--                    </configuration>-->
+                    </configuration>
                 </plugin>
 
                 <plugin>
