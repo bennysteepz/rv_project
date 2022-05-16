@@ -27,7 +27,7 @@ public class testStartsMojo extends AbstractMojo {
     public void execute() throws MojoExecutionException, MojoFailureException {
         getLog().info("Starting testStarts execute() method...");
 
-        invokeMaven("pom.xml", "starts:diff");
+//        invokeMaven("pom.xml", "starts:diff");
 //        new edu.illinois.starts.jdeps.RunMojo().execute();
     }
 
