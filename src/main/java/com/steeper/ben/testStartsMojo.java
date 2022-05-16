@@ -1,6 +1,8 @@
 package com.steeper.ben;
 
+import edu.illinois.starts.jdeps.CleanMojo;
 import edu.illinois.starts.jdeps.DiffMojo;
+import edu.illinois.starts.jdeps.HelpMojo;
 import edu.illinois.starts.jdeps.RunMojo;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
@@ -29,12 +31,13 @@ public class testStartsMojo extends AbstractMojo {
         getLog().info("Starting testStarts execute() method...");
 
 //        invokeMaven("pom.xml", "starts:diff");
-//        new edu.illinois.starts.jdeps.DiffMojo().getArtifactsDir();
+//        new edu.illinois.starts.jdeps.;
         RunMojo runMojo = new RunMojo();
         DiffMojo diffMojo = new DiffMojo();
+        CleanMojo cleanMojo = new CleanMojo();
 //        runMojo.execute();
         getLog().info("TRYING TO GET ARTIFACT:");
-        getLog().info(diffMojo.getArtifactsDir());
+        cleanMojo.execute();
     }
 
     private void invokeMaven(String pomPath, String command) {
