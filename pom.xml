@@ -72,16 +72,26 @@
                     <!-- skip descriptor error -->
                     <configuration>
                         <skipErrorNoDescriptorsFound>true</skipErrorNoDescriptorsFound>
+                        <goalPrefix>mysql-jdbc-compliance</goalPrefix>
                     </configuration>
                     <executions>
                         <execution>
-                            <id>mojo-descriptor</id>
+                            <id>default-descriptor</id>
                             <goals>
                                 <goal>descriptor</goal>
                             </goals>
+                            <phase>process-classes</phase>
+                        </execution>
+                        <execution>
+                            <id>help-descriptor</id>
+                            <goals>
+                                <goal>helpmojo</goal>
+                            </goals>
+                            <phase>process-classes</phase>
                         </execution>
                     </executions>
                 </plugin>
+
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-site-plugin</artifactId>
@@ -103,13 +113,22 @@
                 <!-- skip descriptor error -->
                 <configuration>
                     <skipErrorNoDescriptorsFound>true</skipErrorNoDescriptorsFound>
+                    <goalPrefix>mysql-jdbc-compliance</goalPrefix>
                 </configuration>
                 <executions>
                     <execution>
-                        <id>mojo-descriptor</id>
+                        <id>default-descriptor</id>
                         <goals>
                             <goal>descriptor</goal>
                         </goals>
+                        <phase>process-classes</phase>
+                    </execution>
+                    <execution>
+                        <id>help-descriptor</id>
+                        <goals>
+                            <goal>helpmojo</goal>
+                        </goals>
+                        <phase>process-classes</phase>
                     </execution>
                 </executions>
             </plugin>
