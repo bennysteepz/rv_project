@@ -8,13 +8,13 @@ import org.apache.maven.plugins.annotations.Mojo;
 import org.apache.maven.plugins.annotations.Parameter;
 import org.apache.maven.plugins.annotations.ResolutionScope;
 import org.apache.maven.project.MavenProject;
-import org.apache.maven.shared.invoker.DefaultInvocationRequest;
-import org.apache.maven.shared.invoker.DefaultInvoker;
-import org.apache.maven.shared.invoker.InvocationRequest;
-import org.apache.maven.shared.invoker.Invoker;
-import org.apache.maven.shared.invoker.MavenInvocationException;
-import java.util.Collections;
-import java.io.File;
+//import org.apache.maven.shared.invoker.DefaultInvocationRequest;
+//import org.apache.maven.shared.invoker.DefaultInvoker;
+//import org.apache.maven.shared.invoker.InvocationRequest;
+//import org.apache.maven.shared.invoker.Invoker;
+//import org.apache.maven.shared.invoker.MavenInvocationException;
+//import java.util.Collections;
+//import java.io.File;
 
 
 @Mojo(name = "testStarts", requiresDependencyResolution = ResolutionScope.TEST)
@@ -31,21 +31,21 @@ public class testStartsMojo extends AbstractMojo {
         new edu.illinois.starts.jdeps.RunMojo();
     }
 
-    private void invokeMaven(String pomPath, String command) {
-
-        InvocationRequest request = new DefaultInvocationRequest();
-        request.setPomFile(new File(pomPath));
-        request.setGoals(Collections.singletonList(command));
-
-        Invoker invoker = new DefaultInvoker();
-//            invoker.setMavenHome();
-
-        try {
-            getLog().info("Executing Maven invoker request...");
-            invoker.execute(request);
-        }
-        catch (MavenInvocationException e) {
-            e.printStackTrace();
-        }
-    }
+//    private void invokeMaven(String pomPath, String command) {
+//
+//        InvocationRequest request = new DefaultInvocationRequest();
+//        request.setPomFile(new File(pomPath));
+//        request.setGoals(Collections.singletonList(command));
+//
+//        Invoker invoker = new DefaultInvoker();
+////            invoker.setMavenHome();
+//
+//        try {
+//            getLog().info("Executing Maven invoker request...");
+//            invoker.execute(request);
+//        }
+//        catch (MavenInvocationException e) {
+//            e.printStackTrace();
+//        }
+//    }
 }

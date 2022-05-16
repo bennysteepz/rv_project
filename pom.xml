@@ -45,11 +45,11 @@
             <version>3.0.0</version>
         </dependency>
         <!-- Maven Invoker to run "mvn install" and "mvn test" or other commands programmatically -->
-        <dependency>
-            <groupId>org.apache.maven.shared</groupId>
-            <artifactId>maven-invoker</artifactId>
-            <version>3.0.1</version>
-        </dependency>
+<!--        <dependency>-->
+<!--            <groupId>org.apache.maven.shared</groupId>-->
+<!--            <artifactId>maven-invoker</artifactId>-->
+<!--            <version>3.0.1</version>-->
+<!--        </dependency>-->
 <!--        <dependency>-->
 <!--            <groupId>edu.illinois</groupId>-->
 <!--            <artifactId>starts-maven-plugin</artifactId>-->
