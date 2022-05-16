@@ -83,6 +83,15 @@
         </pluginManagement>
 
         <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-plugin-plugin</artifactId>
+                <version>3.3</version>
+                <!-- skip descriptor error -->
+                <configuration>
+                    <skipErrorNoDescriptorsFound>true</skipErrorNoDescriptorsFound>
+                </configuration>
+            </plugin>
 <!--            <plugin>-->
 <!--                <artifactId>maven-install-plugin</artifactId>-->
 <!--                <executions>-->
