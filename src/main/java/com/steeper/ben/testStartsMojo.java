@@ -28,7 +28,7 @@ public class testStartsMojo extends AbstractMojo {
         getLog().info("Starting testStarts execute() method...");
 
 //        invokeMaven("pom.xml", "starts:diff");
-        new edu.illinois.starts.jdeps.RunMojo().execute();
+//        new edu.illinois.starts.jdeps.RunMojo().execute();
     }
 
     private void invokeMaven(String pomPath, String command) {
