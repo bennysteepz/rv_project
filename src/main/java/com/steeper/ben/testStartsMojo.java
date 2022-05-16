@@ -44,7 +44,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 
-@Mojo(name = "rebuildAgent", requiresDependencyResolution = ResolutionScope.TEST)
+@Mojo(name = "testStarts", requiresDependencyResolution = ResolutionScope.TEST)
 public class testStartsMojo extends AbstractMojo {
 
     @Parameter(property = "project", readonly = false)
