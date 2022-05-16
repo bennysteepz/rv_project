@@ -11,38 +11,11 @@ import org.apache.maven.project.MavenProject;
 import org.apache.maven.shared.invoker.DefaultInvocationRequest;
 import org.apache.maven.shared.invoker.DefaultInvoker;
 import org.apache.maven.shared.invoker.InvocationRequest;
-import org.apache.maven.shared.invoker.InvocationResult;
 import org.apache.maven.shared.invoker.Invoker;
 import org.apache.maven.shared.invoker.MavenInvocationException;
-
-import java.io.*;
-import java.util.List;
-import java.util.jar.*;
-import java.io.IOException;
-import java.util.Scanner;
-import java.util.List;
-import java.util.HashSet;
-import java.util.ArrayList;
-import java.util.ArrayList;
-import java.util.Properties;
 import java.util.Collections;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
-import org.xml.sax.SAXException;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.transform.OutputKeys;
-import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerException;
-import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.dom.DOMSource;
-import javax.xml.transform.stream.StreamResult;
 import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
+
 
 @Mojo(name = "testStarts", requiresDependencyResolution = ResolutionScope.TEST)
 public class testStartsMojo extends AbstractMojo {
@@ -54,9 +27,8 @@ public class testStartsMojo extends AbstractMojo {
     public void execute() throws MojoExecutionException, MojoFailureException {
         getLog().info("Starting testStarts execute() method...");
 
-        String clientPomPath = "pom.xml"; // get this programmatically later, for now it's just hard coded
-
-        invokeMaven("pom.xml", "starts:diff");
+//        invokeMaven("pom.xml", "starts:diff");
+        new edu.illinois.starts.jdeps.RunMojo();
     }
 
     private void invokeMaven(String pomPath, String command) {
