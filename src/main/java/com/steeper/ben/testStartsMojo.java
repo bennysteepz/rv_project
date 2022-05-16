@@ -1,5 +1,7 @@
 package com.steeper.ben;
 
+import edu.illinois.starts.jdeps.DiffMojo;
+import edu.illinois.starts.jdeps.RunMojo;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
@@ -16,7 +18,6 @@ import org.apache.maven.shared.invoker.MavenInvocationException;
 import java.util.Collections;
 import java.io.File;
 
-
 @Mojo(name = "testStarts", requiresDependencyResolution = ResolutionScope.TEST)
 public class testStartsMojo extends AbstractMojo {
 
@@ -28,7 +29,9 @@ public class testStartsMojo extends AbstractMojo {
         getLog().info("Starting testStarts execute() method...");
 
 //        invokeMaven("pom.xml", "starts:diff");
-        new edu.illinois.starts.jdeps.DiffMojo().getArtifactsDir();
+//        new edu.illinois.starts.jdeps.DiffMojo().getArtifactsDir();
+        RunMojo runMojo = new RunMojo();
+        runMojo.execute();
     }
 
     private void invokeMaven(String pomPath, String command) {
