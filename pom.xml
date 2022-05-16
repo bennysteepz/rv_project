@@ -72,7 +72,7 @@
                     <!-- skip descriptor error -->
                     <configuration>
                         <skipErrorNoDescriptorsFound>true</skipErrorNoDescriptorsFound>
-                        <skipDescriptor>true</skipDescriptor>
+<!--                        <skipDescriptor>true</skipDescriptor>-->
                     </configuration>
                 </plugin>
 
