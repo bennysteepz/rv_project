@@ -68,10 +68,11 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-plugin-plugin</artifactId>
-                    <version>3.3</version>
+                    <version>${maven-plugin-plugin.version}</version>
                     <!-- skip descriptor error -->
                     <configuration>
                         <skipErrorNoDescriptorsFound>true</skipErrorNoDescriptorsFound>
+                        <skipDescriptor>true</skipDescriptor>
                     </configuration>
                 </plugin>
 
