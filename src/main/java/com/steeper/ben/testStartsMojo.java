@@ -56,7 +56,7 @@ public class testStartsMojo extends AbstractMojo {
 
         String clientPomPath = "pom.xml"; // get this programmatically later, for now it's just hard coded
 
-//        invokeMaven(clientPomPath, "starts:run");
+        invokeMaven(clientPomPath, "starts:run");
     }
 
     private void invokeMaven(String pomPath, String command) {
