@@ -31,7 +31,10 @@ public class testStartsMojo extends AbstractMojo {
 //        invokeMaven("pom.xml", "starts:diff");
 //        new edu.illinois.starts.jdeps.DiffMojo().getArtifactsDir();
         RunMojo runMojo = new RunMojo();
-        runMojo.execute();
+        DiffMojo diffMojo = new DiffMojo();
+//        runMojo.execute();
+        getLog().info("TRYING TO GET ARTIFACT:");
+        getLog().info(diffMojo.getArtifactsDir());
     }
 
     private void invokeMaven(String pomPath, String command) {
