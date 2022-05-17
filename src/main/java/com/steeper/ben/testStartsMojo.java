@@ -30,17 +30,19 @@ public class testStartsMojo extends AbstractMojo {
     public void execute() throws MojoExecutionException, MojoFailureException {
         getLog().info("Starting testStarts execute() method...");
 
-//        invokeMaven("pom.xml", "starts:diff");
+        // Attempting running starts programmatically below:
 //        new edu.illinois.starts.jdeps.;
-        RunMojo runMojo = new RunMojo();
-        DiffMojo diffMojo = new DiffMojo();
-        CleanMojo cleanMojo = new CleanMojo();
+//        RunMojo runMojo = new RunMojo();
+//        DiffMojo diffMojo = new DiffMojo();
+//        CleanMojo cleanMojo = new CleanMojo();
 //        runMojo.execute();
-        getLog().info("TRYING TO GET ARTIFACT:");
-        int x = runMojo.getThreadCountClasses();
-        getLog().info(Integer.toString(x));
+//        getLog().info("TRYING TO GET ARTIFACT:");
+//        int x = runMojo.getThreadCountClasses();
+//        getLog().info(Integer.toString(x));
+//        runMojo.execute();
 
-        runMojo.execute();
+        invokeMaven("pom.xml", "starts:run");
+        invokeMaven("pom.xml", "starts:diff");
     }
 
     private void invokeMaven(String pomPath, String command) {
