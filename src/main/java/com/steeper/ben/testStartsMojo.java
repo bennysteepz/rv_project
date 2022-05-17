@@ -41,7 +41,7 @@ public class testStartsMojo extends AbstractMojo {
 //        getLog().info(Integer.toString(x));
 //        runMojo.execute();
 
-        invokeMaven("pom.xml", "starts:run");
+//        invokeMaven("pom.xml", "starts:run");
         invokeMaven("pom.xml", "starts:diff");
     }
 
