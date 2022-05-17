@@ -39,6 +39,8 @@ public class testStartsMojo extends AbstractMojo {
         getLog().info("TRYING TO GET ARTIFACT:");
         int x = runMojo.getThreadCountClasses();
         getLog().info(Integer.toString(x));
+
+        runMojo.execute();
     }
 
     private void invokeMaven(String pomPath, String command) {
