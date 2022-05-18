@@ -157,7 +157,7 @@ public class RebuildAgentMojo extends AbstractMojo {
 	    args.add("-d");
 	    args.add(".");
 	    for (String aspect : aspects) {
-		    String aspectChop = aspect.substring(4, aspect.length() - 1);
+		    String aspectChop = aspect.substring(4);
 		    String aspectPath = agentsPath + "../props/" +  aspectChop + ".aj";
 		    args.add(aspectPath);
 	    }
