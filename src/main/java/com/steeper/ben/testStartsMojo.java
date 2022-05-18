@@ -17,8 +17,11 @@ import org.apache.maven.shared.invoker.DefaultInvoker;
 import org.apache.maven.shared.invoker.InvocationRequest;
 import org.apache.maven.shared.invoker.Invoker;
 import org.apache.maven.shared.invoker.MavenInvocationException;
+import org.apache.maven.shared.invoker.InvocationOutputHandler;
 import java.util.Collections;
 import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
 
 @Mojo(name = "testStarts", requiresDependencyResolution = ResolutionScope.TEST)
 public class testStartsMojo extends AbstractMojo {
@@ -45,12 +48,37 @@ public class testStartsMojo extends AbstractMojo {
         invokeMaven("pom.xml", "starts:diff");
     }
 
+    public class StartsOutputHandler implements InvocationOutputHandler {
+
+	private ArrayList<String> affectedClasses = new ArrayList<String>();
+	
+	public void consumeLine(String line)
+	    throws IOException {
+
+	    String searchString = "file:";
+	    int searchIndex = line.indexOf(searchString);
+	    if (searchIndex > -1) {
+		String affectedClass = line.substring(searchIndex + 5, line.length() - 6);
+		affectedClasses.add(affectedClass + ".java");
+		System.out.println(affectedClass + ".java");
+	    }
+	}
+
+	public ArrayList<String> getAffectedClasses() {
+	    return affectedClasses;
+	}
+	
+    }
+
     private void invokeMaven(String pomPath, String command) {
 
+	StartsOutputHandler handler = new StartsOutputHandler();
+	
         InvocationRequest request = new DefaultInvocationRequest();
         request.setPomFile(new File(pomPath));
         request.setGoals(Collections.singletonList(command));
-
+	request.setOutputHandler(handler);
+	
         Invoker invoker = new DefaultInvoker();
 //            invoker.setMavenHome();
 

@@ -15,6 +15,7 @@ import org.apache.maven.shared.invoker.InvocationRequest;
 import org.apache.maven.shared.invoker.InvocationResult;
 import org.apache.maven.shared.invoker.Invoker;
 import org.apache.maven.shared.invoker.MavenInvocationException;
+import org.apache.maven.shared.invoker.InvocationOutputHandler;
 
 import java.io.*;
 import java.util.List;
@@ -80,6 +81,13 @@ public class RebuildAgentMojo extends AbstractMojo {
         TxtWork txtWork = new TxtWork(); // contains methods for working with .txt files
         FileWork fileWork = new FileWork(); // contains general methods for all file types
 
+        // List<String> affectedClasses = txtWork.getLines(affectedClassesPath);                                                                                                  
+        List<String> affectedClasses = getAffectedClasses("pom.xml", "starts:diff");
+        for (String affectedClass : affectedClasses) {
+            getLog().info("log class below!!");
+            getLog().info(affectedClass);
+        }
+	
         // 2. EXTRACT JAR
         // Make directory in agents called "extracted" to put extracted files in
         new File(extractedPath).mkdirs();
@@ -96,8 +104,9 @@ public class RebuildAgentMojo extends AbstractMojo {
         // Read aop-ajc.xml file
         // Store specs from xml tags in List<String> allSpecs
         List<String> allSpecs = xmlWork.readXml(xmlFilePath);
-        List<String> affectedClasses = txtWork.getLines(affectedClassesPath);
-        HashSet<String> affectedSpecs = getAffectedSpecs(allSpecs, affectedClasses);
+	//List<String> allSpecs = txtWork.getLines(txtAllSpecsFilePath);
+	
+	HashSet<String> affectedSpecs = getAffectedSpecs(allSpecs, affectedClasses);
         List<String> specsToInclude = new ArrayList<String>();
         getLog().info("before spec for loop");
         for (String spec : affectedSpecs) {
@@ -146,7 +155,8 @@ public class RebuildAgentMojo extends AbstractMojo {
         // 6. INSTALL JAR AGENT in the client plugin
         fileWork.invokeMaven(clientPomPath, "install:install-file");
     }
-
+    
+    
     private HashSet<String> getAffectedSpecs(List<String> aspects, List<String> affectedClasses) {
 	String runtimeMonitor = agentsPath + "../props/classes/mop/MultiSpec_1RuntimeMonitor.java";
 	try {
@@ -158,6 +168,10 @@ public class RebuildAgentMojo extends AbstractMojo {
 	    args.add(".");
 	    for (String aspect : aspects) {
 		    String aspectChop = aspect.substring(4);
+		    String newline = System.getProperty("line.separator");
+		    if (aspectChop.contains(newline)) {
+			    aspectChop = aspectChop.substring(0, aspectChop.length() - 1);
+		    }
 		    String aspectPath = agentsPath + "../props/" +  aspectChop + ".aj";
 		    args.add(aspectPath);
 	    }
@@ -172,7 +186,27 @@ public class RebuildAgentMojo extends AbstractMojo {
 	    e.printStackTrace();
 	    return new HashSet<String>();
 	}
+    }
 
+    private ArrayList<String> getAffectedClasses(String pomPath, String command) {
+
+        StartsOutputHandler handler = new StartsOutputHandler();
+
+        InvocationRequest request = new DefaultInvocationRequest();
+        request.setPomFile(new File(pomPath));
+        request.setGoals(Collections.singletonList(command));
+        request.setOutputHandler(handler);
+
+        Invoker invoker = new DefaultInvoker();
+        try {
+            getLog().info("Executing Maven invoker request...");
+            invoker.execute(request);
+	    return handler.getAffectedClasses();
+        }
+        catch (MavenInvocationException e) {
+            e.printStackTrace();
+	    return new ArrayList<String>();
+        }
     }
     
     // CLASSES
@@ -479,4 +513,36 @@ public class RebuildAgentMojo extends AbstractMojo {
             }
         }
     }
+
+    // StartsOutputsHandler consumes starts output and stores the affected classes
+    // in an ArrayList
+    public class StartsOutputHandler implements InvocationOutputHandler {
+
+        private ArrayList<String> affectedClasses = new ArrayList<String>();
+
+        public void consumeLine(String line)
+            throws IOException {
+
+	    getLog().info("consuming line here: " + line);
+
+	    String searchString = "file:";
+            int searchIndex = line.indexOf(searchString);
+            if (searchIndex > -1) {
+                String affectedClass = line.substring(searchIndex + 5, line.length() - 6) + ".java";
+		searchIndex = line.indexOf("target");
+		String classBegin = affectedClass.substring(0, searchIndex - 11);
+		String middle = "target/classes";
+		String classEnd = affectedClass.substring(searchIndex - 11 + middle.length());
+		affectedClass = classBegin + "src/main/java" + classEnd;
+                affectedClasses.add(affectedClass);
+                getLog().info("adding affected class: " + affectedClass);
+            }
+        }
+
+        public ArrayList<String> getAffectedClasses() {
+            return affectedClasses;
+        }
+
+    }
+
 }

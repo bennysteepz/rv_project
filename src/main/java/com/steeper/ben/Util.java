@@ -49,6 +49,7 @@ public class Util {
 			    String searchString = "advice from";
 			    String line = reader.readLine();
 			    while (line != null) {
+				System.out.println("consuming line: " + line);
 				int searchIndex = line.indexOf(searchString);
 				if (searchIndex > -1) {
 				    int startIndex = searchIndex + searchString.length() + 2;
