@@ -1,18 +1,18 @@
 
 ### CD INTO PARENT DIRECTORY OF CLIENT APP
-1. "cd parent_directory_of_toy-app"
+1. `cd parent_directory_of_toy-app`
 
 ### CLONE STARTS, CLIENT APP AND RPS PLUGIN
-2. "git clone https://github.com/bennysteepz/starts.git"
+2. `git clone https://github.com/bennysteepz/starts.git`
 
-3. "git clone https://github.com/bennysteepz/toy-app.git"
+3. `git clone https://github.com/bennysteepz/toy-app.git`
 
-4. "git clone https://github.com/bennysteepz/rv_project.git"
+4. `git clone https://github.com/bennysteepz/rv_project.git`
 
 ### INSTALL STARTS, CLIENT APP AND RPS PLUGIN
-5. `cd starts", `mvn install`, `cd ..`
+5. `cd starts`, `mvn install`, `cd ..`
 
-6. `cd toy-app", `mvn install`, `cd ..`
+6. `cd toy-app`, `mvn install`, `cd ..`
 
 7. `cd rv_project`, `mvn install`, `cd ..`
 
