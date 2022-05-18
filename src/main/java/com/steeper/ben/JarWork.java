@@ -7,6 +7,9 @@ import java.io.IOException;
 import java.util.Scanner;
 import java.util.List;
 import java.util.HashSet;
+import java.util.logging.Level; 
+import java.util.logging.Logger; 
+import java.util.logging.*;
 import java.util.ArrayList;
 import java.util.ArrayList;
 import java.util.Properties;
@@ -30,28 +33,28 @@ import java.io.IOException;
 import java.io.InputStream;
 
 
-
 // CLASSES
 // JarWork class includes 2 methods: ExtractJar and CreateJar
 // Both methods take in a file path
 public class JarWork {
 
+    private final static Logger LOGGER =  Logger.getLogger(Logger.GLOBAL_LOGGER_NAME);
+    
     public void main(String[] args) throws java.io.IOException {
-	//getLog().info("JarWork class running...");
+	LOGGER.log(Level.INFO, "JarWork class running..."); 
     }
     // Extracts jar located at filePath
     // inputs filePath: path to .jar file, and destPath: path to destination folder
     // Reference:
     // https://stackoverflow.com/questions/1529611/how-to-write-a-java-program-which-can-extract-a-jar-file-and-store-its-data-in-s
     public void extractJar(String filePath, String destPath) throws java.io.IOException {
-	//getLog().info("Extracting .jar file...");
+	LOGGER.log(Level.INFO, "Extracting .jar file...");
 	//jar file path
 	java.util.jar.JarFile jarfile = new java.util.jar.JarFile(new java.io.File(filePath));
 	java.util.Enumeration<java.util.jar.JarEntry> enu = jarfile.entries();
 	while (enu.hasMoreElements()) {
 	    String destdir = destPath;    // destination directory
 	    java.util.jar.JarEntry je = enu.nextElement();
-	    // System.out.println(je.getName());
 	    java.io.File fl = new java.io.File(destdir, je.getName());
 
 	    if (!fl.exists()) {
@@ -69,13 +72,13 @@ public class JarWork {
 	    fo.close();
 	    is.close();
 	}
-	//getLog().info("Finished extracting .jar file...");
+	LOGGER.log(Level.INFO, "Finished extracting .jar file..");
     }
     // Create jar file, reference:
     // https://stackoverflow.com/questions/1281229/how-to-use-jaroutputstream-to-create-a-jar-file/
     // takes in source path .jar file, target path, and Manifest file from getManifest() method
     public void createJar(String sourcePath, String targetPath, Manifest manifest_custom) throws IOException {
-	//getLog().info("Creating .jar file...");
+	LOGGER.log(Level.INFO, "Creating .jar file...");
 	JarOutputStream target = new JarOutputStream(new FileOutputStream(targetPath), manifest_custom);
 	File inputDirectory = new File(sourcePath);
 	for (File nestedFile : inputDirectory.listFiles())
@@ -130,13 +133,13 @@ public class JarWork {
 	if (file.exists()) {
 	    InputStream inputStream = new FileInputStream(file);
 	    try {
-		//getLog().info("Manifest found...");
+		LOGGER.log(Level.INFO, "Manifest found...");
 		return new Manifest(inputStream);
 	    } finally {
 		inputStream.close();
 	    }
 	} else {
-	    //getLog().info("No manifest found.");
+	    LOGGER.log(Level.INFO, "No manifest found.");
 	    return new Manifest(); // empty manifest
 	}
     }
