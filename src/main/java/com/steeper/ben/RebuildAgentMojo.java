@@ -94,8 +94,10 @@ public class RebuildAgentMojo extends AbstractMojo {
         // 3. CREATE specListAll.txt in client plugin root dir FROM aop-ajc.xml in agents
         // Read aop-ajc.xml file
         // Store specs from xml tags in List<String> allSpecs
-        List<String> allSpecs = xmlWork.readXml(xmlFilePath);
-        List<String> affectedClasses = txtWork.getLines(affectedClassesPath);
+
+	List<String> allSpecs = txtWork.getLines(txtAllSpecsFilePath);
+	
+	List<String> affectedClasses = txtWork.getLines(affectedClassesPath);
         HashSet<String> affectedSpecs = getAffectedSpecs(allSpecs, affectedClasses);
         List<String> specsToInclude = new ArrayList<String>();
         getLog().info("before spec for loop");
@@ -107,15 +109,14 @@ public class RebuildAgentMojo extends AbstractMojo {
 
 	
 	// Create allSpecs.txt and write allSpecs to it
-        txtWork.createTxtFile(txtAllSpecsFilePath);
+        // txtWork.createTxtFile(txtAllSpecsFilePath);
         // Write aop-ajc.xml spec strings to specListAll.txt
-        txtWork.writeTxtFile(txtAllSpecsFilePath, allSpecs);
+        // txtWork.writeTxtFile(txtAllSpecsFilePath, allSpecs);
 
         // 4. RECREATE XML file from specs.txt (which is located in my plugin's resources directory)
         // ** specs.txt is given for now, but later it will be updated programatically **
 
 	// Read specs.txt and store lines in List<String> specsToInclude variable
-        //List<String> specsToInclude = txtWork.getLines(specsPath);
 
 	// First remove old xml file to replace
         // (later found out this is unnecessary, but I suppose it can't hurt to assure old file is gone)
@@ -156,7 +157,7 @@ public class RebuildAgentMojo extends AbstractMojo {
 	    args.add("-d");
 	    args.add(".");
 	    for (String aspect : aspects) {
-		    String aspectChop = aspect.substring(4, aspect.length() - 1);
+		    String aspectChop = aspect.substring(4);
 		    String aspectPath = agentsPath + "../props/" +  aspectChop + ".aj";
 		    args.add(aspectPath);
 	    }
