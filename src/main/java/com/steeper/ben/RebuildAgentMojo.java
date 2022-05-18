@@ -44,6 +44,9 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 
+import org.apache.maven.shared.invoker.SystemOutHandler;
+
+
 @Mojo(name = "rebuildAgent", requiresDependencyResolution = ResolutionScope.TEST)
 public class RebuildAgentMojo extends AbstractMojo {
 
@@ -81,29 +84,28 @@ public class RebuildAgentMojo extends AbstractMojo {
 
         // 2. EXTRACT JAR
         // Make directory in agents called "extracted" to put extracted files in
-        new File(extractedPath).mkdirs();
-        try {
+        // new File(extractedPath).mkdirs();
+        // try {
             // Extract Jar file - arguments: jar path followed by destination path
-            jarWork.extractJar(jarFilePath, extractedPath);
+        //    jarWork.extractJar(jarFilePath, extractedPath);
             // Delete jar that was just extracted
-            fileWork.deleteFile(jarFilePath);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        //    fileWork.deleteFile(jarFilePath);
+        //} catch (IOException e) {
+        //    e.printStackTrace();
+        //}
 
         // 3. CREATE specListAll.txt in client plugin root dir FROM aop-ajc.xml in agents
         // Read aop-ajc.xml file
         // Store specs from xml tags in List<String> allSpecs
 
 	List<String> allSpecs = txtWork.getLines(txtAllSpecsFilePath);
+
+	//List<String> testAffectdClasses = getAffectedClasses();
 	
 	List<String> affectedClasses = txtWork.getLines(affectedClassesPath);
         HashSet<String> affectedSpecs = getAffectedSpecs(allSpecs, affectedClasses);
         List<String> specsToInclude = new ArrayList<String>();
-        getLog().info("before spec for loop");
         for (String spec : affectedSpecs) {
-            getLog().info("log spec below!!:");
-            getLog().info(spec);
             specsToInclude.add(spec);
         }
 
@@ -147,6 +149,40 @@ public class RebuildAgentMojo extends AbstractMojo {
         fileWork.invokeMaven(clientPomPath, "install:install-file");
     }
 
+    /*public class CustomHandler implements InvocationOutputHandler {
+
+	public void consumeLine () {
+
+	}
+	}*/
+
+    private List<String> getAffectedClasses() {
+
+	String pomPath = "pom.xml";
+	String command = "starts:diff";
+
+	List<String> affectedClasses = new ArrayList<String>();
+
+	InvocationRequest request = new DefaultInvocationRequest();
+        request.setPomFile(new File(pomPath));
+        request.setGoals(Collections.singletonList(command));
+	//request.setOutputHandler(new SystemOutHandler(true));
+	
+        Invoker invoker = new DefaultInvoker();
+	//invoker.setMavenHome();
+
+        try {
+            getLog().info("Executing Maven invoker request...");
+            invoker.execute(request);
+        }
+        catch (MavenInvocationException e) {
+            e.printStackTrace();
+        }
+
+	return affectedClasses;
+
+    }
+    
     private HashSet<String> getAffectedSpecs(List<String> aspects, List<String> affectedClasses) {
 	String runtimeMonitor = agentsPath + "../props/classes/mop/MultiSpec_1RuntimeMonitor.java";
 	try {

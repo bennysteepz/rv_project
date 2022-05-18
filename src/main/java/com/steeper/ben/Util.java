@@ -55,7 +55,6 @@ public class Util {
 				    int endIndex = line.indexOf("(", startIndex) - 2;
 				    String spec = line.substring(startIndex, endIndex);
 				    affectedSpecs.add(spec);
-				    System.out.println(spec);
 				}
 				line = reader.readLine();
 			    }
