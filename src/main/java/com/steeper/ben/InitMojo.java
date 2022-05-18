@@ -80,7 +80,9 @@ public class InitMojo extends AbstractMojo {
             // Extract Jar file - arguments: jar path followed by destination path
             jarWork.extractJar(jarFilePath, extractedPath);
             // Delete jar that was just extracted
-            fileWork.deleteFile(jarFilePath);
+
+	    // I'm pretty sure we should remove this step just for the init stage
+	    //fileWork.deleteFile(jarFilePath);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -92,6 +94,27 @@ public class InitMojo extends AbstractMojo {
         // Write aop-ajc.xml spec strings to specListAll.txt
         txtWork.writeTxtFile(txtAllSpecsFilePath, allSpecs);
 	
+
+	// initialize starts
+	invokeMaven("pom.xml", "starts:run");
 	
+    }
+
+    private void invokeMaven(String pomPath, String command) {
+
+        InvocationRequest request = new DefaultInvocationRequest();
+        request.setPomFile(new File(pomPath));
+        request.setGoals(Collections.singletonList(command));
+
+        Invoker invoker = new DefaultInvoker();
+	//invoker.setMavenHome();
+
+        try {
+            getLog().info("Executing Maven invoker request...");
+            invoker.execute(request);
+        }
+        catch (MavenInvocationException e) {
+            e.printStackTrace();
+        }
     }
 }
