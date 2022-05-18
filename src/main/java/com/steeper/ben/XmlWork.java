@@ -6,6 +6,9 @@ import java.util.jar.*;
 import java.io.IOException;
 import java.util.Scanner;
 import java.util.List;
+import java.util.logging.Level; 
+import java.util.logging.Logger; 
+import java.util.logging.*;
 import java.util.HashSet;
 import java.util.ArrayList;
 import java.util.ArrayList;
@@ -36,12 +39,14 @@ import java.io.InputStream;
 // https://mkyong.com/java/how-to-read-xml-file-in-java-dom-parser/
 public class XmlWork {
 
+    private final static Logger LOGGER =  Logger.getLogger(Logger.GLOBAL_LOGGER_NAME);
+    
     public void main(String[] args) {
-	//getLog().info("XmlWork class running...");
+	LOGGER.log(Level.INFO, "XmlWork class running..."); 
     }
 
     public List<String> readXml(String filePath) {
-	//getLog().info("Reading .xml file...");
+	LOGGER.log(Level.INFO, "Reading .xml file...");
 	// Instantiate the Factory
 	DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
 
@@ -85,7 +90,7 @@ public class XmlWork {
     // reference: https://mkyong.com/java/how-to-create-xml-file-in-java-dom/
     public void createXML(String fileName, List<String> specList)
 	    throws ParserConfigurationException, TransformerException {
-	//getLog().info("Create .xml file from specs...");
+	LOGGER.log(Level.INFO, "Create .xml file from specs...");
 	DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
 	DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
 

@@ -7,6 +7,9 @@ import java.io.IOException;
 import java.util.Scanner;
 import java.util.List;
 import java.util.HashSet;
+import java.util.logging.Level; 
+import java.util.logging.Logger; 
+import java.util.logging.*;
 import java.util.ArrayList;
 import java.util.ArrayList;
 import java.util.Properties;
@@ -33,13 +36,14 @@ import java.io.InputStream;
 // CLASS with various methods to work with .txt files
 public class TxtWork {
 
+    private final static Logger LOGGER =  Logger.getLogger(Logger.GLOBAL_LOGGER_NAME);
+    
     public void main(String[] args) throws java.io.IOException {
-	//getLog().info("TxtWork class running...");
+	LOGGER.log(Level.INFO, "TxtWork class running..."); 
     }
     public void createTxtFile(String filePath) {
 	try {
-	    // getLog().info("Creating text file to path: " + filePath);
-	    // getLog().info(filePath);
+	    LOGGER.log(Level.INFO, "Creating text file to path: " + filePath);
 	    File myObj = new File(filePath);
 	    if (myObj.createNewFile()) {
 		System.out.println("File created: " + myObj.getName());
@@ -62,9 +66,9 @@ public class TxtWork {
 		myWriter.write(this_line);
 	    }
 	    myWriter.close();
-	    //getLog().info("Wrote to file: " + filePath);
+	    LOGGER.log(Level.INFO, "Wrote to file: " + filePath);
 	} catch (IOException e) {
-	    //getLog().info("An error occurred.");
+	    LOGGER.log(Level.INFO, "An error occurred.");
 	    e.printStackTrace();
 	}
     }
@@ -82,7 +86,7 @@ public class TxtWork {
 	    }
 	    myReader.close();
 	} catch (FileNotFoundException e) {
-	    //getLog().info("An error occurred, FileNotFoundException");
+	    LOGGER.log(Level.INFO, "An error occurred, FileNotFoundException");
 	    e.printStackTrace();
 	}
 	return fileLines;

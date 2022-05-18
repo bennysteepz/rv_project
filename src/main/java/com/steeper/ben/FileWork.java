@@ -14,6 +14,9 @@ import java.util.jar.*;
 import java.io.IOException;
 import java.util.Scanner;
 import java.util.List;
+import java.util.logging.Level; 
+import java.util.logging.Logger; 
+import java.util.logging.*;
 import java.util.HashSet;
 import java.util.ArrayList;
 import java.util.ArrayList;
@@ -41,13 +44,16 @@ import java.io.InputStream;
 // FileWork class contains general methods that can be applied to all file types:
 // (jar, xml and txt for example)
 public class FileWork {
+
+    private final static Logger LOGGER =  Logger.getLogger(Logger.GLOBAL_LOGGER_NAME);
+    
     // Delete file
     public void deleteFile(String filePath) {
 	File myObj = new File(filePath);
 	if (myObj.delete()) {
-	    //getLog().info("Deleted the file: " + myObj.getName());
+	    LOGGER.log(Level.INFO, "Deleted the file: " + myObj.getName()); 
 	} else {
-	    //getLog().info("Failed to delete the file.");
+	    LOGGER.log(Level.INFO, "Failed to delete the file."); 
 	}
     }
     // Install - uses "Maven Invocation API" to run "mvn install:...agent.jar..."
@@ -61,8 +67,8 @@ public class FileWork {
 	Invoker invoker = new DefaultInvoker();
 //            invoker.setMavenHome();
 
-	try {
-	    //getLog().info("Executing Maven invoker request...");
+	try { 
+	    LOGGER.log(Level.INFO, "Executing Maven invoker request...");
 	    invoker.execute(request);
 	}
 	catch (MavenInvocationException e) {
