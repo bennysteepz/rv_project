@@ -107,14 +107,21 @@ public class RebuildAgentMojo extends AbstractMojo {
             specsToInclude.add(spec);
         }
 
-	
-	// Create allSpecs.txt and write allSpecs to it
-        txtWork.createTxtFile(txtAllSpecsFilePath);
-        // Write aop-ajc.xml spec strings to specListAll.txt
-        // txtWork.writeTxtFile(txtAllSpecsFilePath, allSpecs);
+        // INITIALIZE: IF allSpecs.txt DOES NOT EXIST THEN THIS IS THE FIRST PLUGIN RUN
+        // "mvn clean" CAN ALSO REVERT PLUGIN BACK TO PRE-INITIALIZED STATE
+        File f = new File(txtAllSpecsFilePath);
+        if (!f.exists()) {
+            getLog().info("FILE DOES NOT EXIST");
+            getLog().info("INITIALIZE...");
+            // Create allSpecs.txt and write allSpecs to it
+            txtWork.createTxtFile(txtAllSpecsFilePath);
+            // Write aop-ajc.xml spec strings to specListAll.txt
+            txtWork.writeTxtFile(txtAllSpecsFilePath, allSpecs);
+            // Run "starts:run" in client app to start detecting code changes
+            fileWork.invokeMaven("pom.xml", "starts:run");
+        }
 
-        // 4. RECREATE XML file from specs.txt (which is located in my plugin's resources directory)	
-	// First remove old xml file to replace
+        // First remove old xml file to replace
         // (later found out this is unnecessary, but I suppose it can't hurt to assure old file is gone)
         fileWork.deleteFile(xmlFilePath);
         // Create new XML file with specsToInclude
