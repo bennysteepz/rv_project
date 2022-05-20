@@ -55,13 +55,6 @@ public class RebuildAgentMojo extends AbstractMojo {
     // agentJarPath: Path to the parent directory of JavaMOPAgent.jar
     @Parameter(property = "agentsPath", defaultValue = "")
     private String agentsPath;
-
-    // specListPath: path to the .txt file listing specs to include
-    @Parameter(property = "specsPath", defaultValue = "/src/main/resources/specs.txt")
-    private String specsPath;
-
-    @Parameter(property = "affectedClassesPath", defaultValue = "/src/main/resources/affectedClasses.txt")
-    private String affectedClassesPath;
     
     @Override
     public void execute() throws MojoExecutionException, MojoFailureException {
@@ -80,8 +73,7 @@ public class RebuildAgentMojo extends AbstractMojo {
         XmlWork xmlWork = new XmlWork(); // contains methods for working with .xml files
         TxtWork txtWork = new TxtWork(); // contains methods for working with .txt files
         FileWork fileWork = new FileWork(); // contains general methods for all file types
-
-        // List<String> affectedClasses = txtWork.getLines(affectedClassesPath);                                                                                                  
+	
         List<String> affectedClasses = getAffectedClasses("pom.xml", "starts:diff");
         for (String affectedClass : affectedClasses) {
             getLog().info("log class below!!");
@@ -103,8 +95,8 @@ public class RebuildAgentMojo extends AbstractMojo {
         // 3. CREATE specListAll.txt in client plugin root dir FROM aop-ajc.xml in agents
         // Read aop-ajc.xml file
         // Store specs from xml tags in List<String> allSpecs
-        List<String> allSpecs = xmlWork.readXml(xmlFilePath);
-	//List<String> allSpecs = txtWork.getLines(txtAllSpecsFilePath);
+        //List<String> allSpecs = xmlWork.readXml(xmlFilePath);
+	List<String> allSpecs = txtWork.getLines(txtAllSpecsFilePath);
 	
 	HashSet<String> affectedSpecs = getAffectedSpecs(allSpecs, affectedClasses);
         List<String> specsToInclude = new ArrayList<String>();
@@ -119,14 +111,9 @@ public class RebuildAgentMojo extends AbstractMojo {
 	// Create allSpecs.txt and write allSpecs to it
         txtWork.createTxtFile(txtAllSpecsFilePath);
         // Write aop-ajc.xml spec strings to specListAll.txt
-        txtWork.writeTxtFile(txtAllSpecsFilePath, allSpecs);
+        // txtWork.writeTxtFile(txtAllSpecsFilePath, allSpecs);
 
-        // 4. RECREATE XML file from specs.txt (which is located in my plugin's resources directory)
-        // ** specs.txt is given for now, but later it will be updated programatically **
-
-	// Read specs.txt and store lines in List<String> specsToInclude variable
-        //List<String> specsToInclude = txtWork.getLines(specsPath);
-
+        // 4. RECREATE XML file from specs.txt (which is located in my plugin's resources directory)	
 	// First remove old xml file to replace
         // (later found out this is unnecessary, but I suppose it can't hurt to assure old file is gone)
         fileWork.deleteFile(xmlFilePath);
@@ -154,6 +141,9 @@ public class RebuildAgentMojo extends AbstractMojo {
 
         // 6. INSTALL JAR AGENT in the client plugin
         fileWork.invokeMaven(clientPomPath, "install:install-file");
+
+	// Run starts:run so that the next time diff is called the changes will be detected
+	fileWork.invokeMaven("pom.xml", "starts:run");
     }
     
     
