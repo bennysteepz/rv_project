@@ -16,6 +16,8 @@ import org.apache.maven.shared.invoker.Invoker;
 import org.apache.maven.shared.invoker.MavenInvocationException;
 
 import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.List;
 import java.util.jar.*;
 import java.io.IOException;
@@ -95,9 +97,9 @@ public class RebuildAgentMojo extends AbstractMojo {
         // Read aop-ajc.xml file
         // Store specs from xml tags in List<String> allSpecs
 
-	List<String> allSpecs = txtWork.getLines(txtAllSpecsFilePath);
-	
-	List<String> affectedClasses = txtWork.getLines(affectedClassesPath);
+        List<String> allSpecs = txtWork.getLines(txtAllSpecsFilePath);
+
+        List<String> affectedClasses = txtWork.getLines(affectedClassesPath);
         HashSet<String> affectedSpecs = getAffectedSpecs(allSpecs, affectedClasses);
         List<String> specsToInclude = new ArrayList<String>();
         getLog().info("before spec for loop");
@@ -107,18 +109,21 @@ public class RebuildAgentMojo extends AbstractMojo {
             specsToInclude.add(spec);
         }
 
-	
-	// Create allSpecs.txt and write allSpecs to it
-        // txtWork.createTxtFile(txtAllSpecsFilePath);
-        // Write aop-ajc.xml spec strings to specListAll.txt
-        // txtWork.writeTxtFile(txtAllSpecsFilePath, allSpecs);
+        // INITIALIZE: IF allSpecs.txt DOES NOT EXIST THEN THIS IS THE FIRST PLUGIN RUN
+        // "mvn clean" CAN ALSO REVERT PLUGIN BACK TO PRE-INITIALIZED STATE
+        File f = new File(txtAllSpecsFilePath);
+        if (!f.exists()) {
+            getLog().info("FILE DOES NOT EXIST");
+            getLog().info("INITIALIZE...");
+            // Create allSpecs.txt and write allSpecs to it
+            txtWork.createTxtFile(txtAllSpecsFilePath);
+            // Write aop-ajc.xml spec strings to specListAll.txt
+            txtWork.writeTxtFile(txtAllSpecsFilePath, allSpecs);
+            // Run "starts:run" in client app to start detecting code changes
+            fileWork.invokeMaven("pom.xml", "starts:run");
+        }
 
-        // 4. RECREATE XML file from specs.txt (which is located in my plugin's resources directory)
-        // ** specs.txt is given for now, but later it will be updated programatically **
-
-	// Read specs.txt and store lines in List<String> specsToInclude variable
-
-	// First remove old xml file to replace
+        // First remove old xml file to replace
         // (later found out this is unnecessary, but I suppose it can't hurt to assure old file is gone)
         fileWork.deleteFile(xmlFilePath);
         // Create new XML file with specsToInclude
