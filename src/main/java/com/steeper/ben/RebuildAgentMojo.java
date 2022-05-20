@@ -1,4 +1,3 @@
-
 package com.steeper.ben;
 
 import org.apache.maven.plugin.AbstractMojo;
@@ -15,9 +14,10 @@ import org.apache.maven.shared.invoker.InvocationRequest;
 import org.apache.maven.shared.invoker.InvocationResult;
 import org.apache.maven.shared.invoker.Invoker;
 import org.apache.maven.shared.invoker.MavenInvocationException;
-import org.apache.maven.shared.invoker.InvocationOutputHandler;
 
 import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.List;
 import java.util.jar.*;
 import java.io.IOException;
@@ -55,6 +55,13 @@ public class RebuildAgentMojo extends AbstractMojo {
     // agentJarPath: Path to the parent directory of JavaMOPAgent.jar
     @Parameter(property = "agentsPath", defaultValue = "")
     private String agentsPath;
+
+    // specListPath: path to the .txt file listing specs to include
+    @Parameter(property = "specsPath", defaultValue = "/src/main/resources/specs.txt")
+    private String specsPath;
+
+    @Parameter(property = "affectedClassesPath", defaultValue = "/src/main/resources/affectedClasses.txt")
+    private String affectedClassesPath;
     
     @Override
     public void execute() throws MojoExecutionException, MojoFailureException {
@@ -73,13 +80,7 @@ public class RebuildAgentMojo extends AbstractMojo {
         XmlWork xmlWork = new XmlWork(); // contains methods for working with .xml files
         TxtWork txtWork = new TxtWork(); // contains methods for working with .txt files
         FileWork fileWork = new FileWork(); // contains general methods for all file types
-	
-        List<String> affectedClasses = getAffectedClasses("pom.xml", "starts:diff");
-        for (String affectedClass : affectedClasses) {
-            getLog().info("log class below!!");
-            getLog().info(affectedClass);
-        }
-	
+
         // 2. EXTRACT JAR
         // Make directory in agents called "extracted" to put extracted files in
         new File(extractedPath).mkdirs();
@@ -95,10 +96,11 @@ public class RebuildAgentMojo extends AbstractMojo {
         // 3. CREATE specListAll.txt in client plugin root dir FROM aop-ajc.xml in agents
         // Read aop-ajc.xml file
         // Store specs from xml tags in List<String> allSpecs
-        //List<String> allSpecs = xmlWork.readXml(xmlFilePath);
-	List<String> allSpecs = txtWork.getLines(txtAllSpecsFilePath);
-	
-	HashSet<String> affectedSpecs = getAffectedSpecs(allSpecs, affectedClasses);
+
+        List<String> allSpecs = txtWork.getLines(txtAllSpecsFilePath);
+
+        List<String> affectedClasses = txtWork.getLines(affectedClassesPath);
+        HashSet<String> affectedSpecs = getAffectedSpecs(allSpecs, affectedClasses);
         List<String> specsToInclude = new ArrayList<String>();
         getLog().info("before spec for loop");
         for (String spec : affectedSpecs) {
@@ -107,14 +109,21 @@ public class RebuildAgentMojo extends AbstractMojo {
             specsToInclude.add(spec);
         }
 
-	
-	// Create allSpecs.txt and write allSpecs to it
-        txtWork.createTxtFile(txtAllSpecsFilePath);
-        // Write aop-ajc.xml spec strings to specListAll.txt
-        // txtWork.writeTxtFile(txtAllSpecsFilePath, allSpecs);
+        // INITIALIZE: IF allSpecs.txt DOES NOT EXIST THEN THIS IS THE FIRST PLUGIN RUN
+        // "mvn clean" CAN ALSO REVERT PLUGIN BACK TO PRE-INITIALIZED STATE
+        File f = new File(txtAllSpecsFilePath);
+        if (!f.exists()) {
+            getLog().info("FILE DOES NOT EXIST");
+            getLog().info("INITIALIZE...");
+            // Create allSpecs.txt and write allSpecs to it
+            txtWork.createTxtFile(txtAllSpecsFilePath);
+            // Write aop-ajc.xml spec strings to specListAll.txt
+            txtWork.writeTxtFile(txtAllSpecsFilePath, allSpecs);
+            // Run "starts:run" in client app to start detecting code changes
+            fileWork.invokeMaven("pom.xml", "starts:run");
+        }
 
-        // 4. RECREATE XML file from specs.txt (which is located in my plugin's resources directory)	
-	// First remove old xml file to replace
+        // First remove old xml file to replace
         // (later found out this is unnecessary, but I suppose it can't hurt to assure old file is gone)
         fileWork.deleteFile(xmlFilePath);
         // Create new XML file with specsToInclude
@@ -141,12 +150,8 @@ public class RebuildAgentMojo extends AbstractMojo {
 
         // 6. INSTALL JAR AGENT in the client plugin
         fileWork.invokeMaven(clientPomPath, "install:install-file");
-
-	// Run starts:run so that the next time diff is called the changes will be detected
-	fileWork.invokeMaven("pom.xml", "starts:run");
     }
-    
-    
+
     private HashSet<String> getAffectedSpecs(List<String> aspects, List<String> affectedClasses) {
 	String runtimeMonitor = agentsPath + "../props/classes/mop/MultiSpec_1RuntimeMonitor.java";
 	try {
@@ -158,10 +163,6 @@ public class RebuildAgentMojo extends AbstractMojo {
 	    args.add(".");
 	    for (String aspect : aspects) {
 		    String aspectChop = aspect.substring(4);
-		    String newline = System.getProperty("line.separator");
-		    if (aspectChop.contains(newline)) {
-			    aspectChop = aspectChop.substring(0, aspectChop.length() - 1);
-		    }
 		    String aspectPath = agentsPath + "../props/" +  aspectChop + ".aj";
 		    args.add(aspectPath);
 	    }
@@ -176,27 +177,7 @@ public class RebuildAgentMojo extends AbstractMojo {
 	    e.printStackTrace();
 	    return new HashSet<String>();
 	}
-    }
 
-    private ArrayList<String> getAffectedClasses(String pomPath, String command) {
-
-        StartsOutputHandler handler = new StartsOutputHandler();
-
-        InvocationRequest request = new DefaultInvocationRequest();
-        request.setPomFile(new File(pomPath));
-        request.setGoals(Collections.singletonList(command));
-        request.setOutputHandler(handler);
-
-        Invoker invoker = new DefaultInvoker();
-        try {
-            getLog().info("Executing Maven invoker request...");
-            invoker.execute(request);
-	    return handler.getAffectedClasses();
-        }
-        catch (MavenInvocationException e) {
-            e.printStackTrace();
-	    return new ArrayList<String>();
-        }
     }
     
     // CLASSES
@@ -534,11 +515,5 @@ public class RebuildAgentMojo extends AbstractMojo {
 		}
             }
         }
-
-        public ArrayList<String> getAffectedClasses() {
-            return affectedClasses;
-        }
-
     }
-
 }
