@@ -49,13 +49,13 @@ public class Util {
 			    String searchString = "advice from";
 			    String line = reader.readLine();
 			    while (line != null) {
+				System.out.println("consuming line: " + line);
 				int searchIndex = line.indexOf(searchString);
 				if (searchIndex > -1) {
 				    int startIndex = searchIndex + searchString.length() + 2;
 				    int endIndex = line.indexOf("(", startIndex) - 2;
 				    String spec = line.substring(startIndex, endIndex);
 				    affectedSpecs.add(spec);
-				    System.out.println(spec);
 				}
 				line = reader.readLine();
 			    }
