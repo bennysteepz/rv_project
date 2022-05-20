@@ -524,8 +524,14 @@ public class RebuildAgentMojo extends AbstractMojo {
 		String middle = "target/classes";
 		String classEnd = affectedClass.substring(searchIndex - 11 + middle.length());
 		affectedClass = classBegin + "src/main/java" + classEnd;
-                affectedClasses.add(affectedClass);
-                getLog().info("adding affected class: " + affectedClass);
+		File f = new File(affectedClass);
+		if(f.exists() && !f.isDirectory()) { 
+		    affectedClasses.add(affectedClass);
+		    getLog().info("adding affected class: " + affectedClass);
+		}
+		else {
+		    getLog().info("didn't add class (does not exist): " + affectedClass);
+		}
             }
         }
 
