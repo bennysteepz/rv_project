@@ -61,7 +61,7 @@ public class RebuildAgentMojo extends AbstractMojo {
     public void execute() throws MojoExecutionException, MojoFailureException {
         getLog().info("Starting rebuildAgent execute() method...");
 
-        // 1. CREATE FILE PATH VARIABLES and INSTANTIATE CLASSES
+        // CREATE FILE PATH VARIABLES and INSTANTIATE CLASSES
         String jarFilePath = agentsPath + "/JavaMOPAgent.jar";
         String xmlFilePath = agentsPath + "/extracted/META-INF/aop-ajc.xml";
         String txtAllSpecsFilePath = "allSpecs.txt"; // store in client plugin root directory
@@ -75,13 +75,14 @@ public class RebuildAgentMojo extends AbstractMojo {
         TxtWork txtWork = new TxtWork(); // contains methods for working with .txt files
         FileWork fileWork = new FileWork(); // contains general methods for all file types
 
+        // GET AFFECTED CLASSES, STORE IN affectedClasses variable
         List<String> affectedClasses = getAffectedClasses("pom.xml", "starts:diff");
         for (String affectedClass : affectedClasses) {
             getLog().info("log class below!!");
             getLog().info(affectedClass);
         }
 	
-        // 2. EXTRACT JAR
+        // EXTRACT JAR
         // Make directory in agents called "extracted" to put extracted files in
         new File(extractedPath).mkdirs();
         try {
@@ -103,7 +104,7 @@ public class RebuildAgentMojo extends AbstractMojo {
             // Create allSpecs.txt and write allSpecs to it
             txtWork.createTxtFile(txtAllSpecsFilePath);
             // Write aop-ajc.xml spec strings to specListAll.txt
-            allSpecs =
+            allSpecs = xmlWork.readXml(xmlFilePath);
             txtWork.writeTxtFile(txtAllSpecsFilePath, allSpecs);
             // Run "starts:run" in client app to start detecting code changes
             fileWork.invokeMaven("pom.xml", "starts:run");
@@ -112,6 +113,7 @@ public class RebuildAgentMojo extends AbstractMojo {
             allSpecs = txtWork.getLines(txtAllSpecsFilePath);
         }
 
+        // GET AFFECTED SPECS
         HashSet<String> affectedSpecs = getAffectedSpecs(allSpecs, affectedClasses);
         List<String> specsToInclude = new ArrayList<String>();
         getLog().info("before spec for loop");
@@ -121,8 +123,7 @@ public class RebuildAgentMojo extends AbstractMojo {
             specsToInclude.add(spec);
         }
 
-        // First remove old xml file to replace
-        // (later found out this is unnecessary, but I suppose it can't hurt to assure old file is gone)
+        // RECREATE XML - First remove old xml file to replace
         fileWork.deleteFile(xmlFilePath);
         // Create new XML file with specsToInclude
         try {
@@ -133,7 +134,7 @@ public class RebuildAgentMojo extends AbstractMojo {
             e.printStackTrace();
         }
 
-        // 5. REBUILD the JAR
+        // REBUILD JAR
         // Create new jar in agents directory
         try {
             // Get the current manifest and pass it into the createJar() method
@@ -146,9 +147,11 @@ public class RebuildAgentMojo extends AbstractMojo {
             e.printStackTrace();
         }
 
-        // 6. INSTALL JAR AGENT in the client plugin
+        // INSTALL JAR AGENT in the client plugin
         fileWork.invokeMaven(clientPomPath, "install:install-file");
-	fileWork.invokeMaven("pom.xml", "starts:run");
+
+        // RUN starts:run in client plugin to reset state to check for differences later
+	    fileWork.invokeMaven("pom.xml", "starts:run");
     }
 
     private HashSet<String> getAffectedSpecs(List<String> aspects, List<String> affectedClasses) {
