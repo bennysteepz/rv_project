@@ -94,10 +94,11 @@ public class RebuildAgentMojo extends AbstractMojo {
             e.printStackTrace();
         }
 
-        // INITIALIZE: IF allSpecs.txt DOES NOT EXIST THEN THIS IS THE FIRST PLUGIN RUN
+        // INITIALIZE allSpecs.txt: IF allSpecs.txt DOES NOT EXIST THEN THIS IS THE FIRST PLUGIN RUN
         // "mvn clean" CAN ALSO REVERT PLUGIN BACK TO PRE-INITIALIZED STATE
         List<String> allSpecs;
         File f = new File(txtAllSpecsFilePath);
+        // If first run, then get all the specs from aop-ajc.xml and create allSpecs.txt
         if (!f.exists()) {
             getLog().info("FILE DOES NOT EXIST");
             getLog().info("INITIALIZE...");
@@ -106,9 +107,8 @@ public class RebuildAgentMojo extends AbstractMojo {
             // Write aop-ajc.xml spec strings to specListAll.txt
             allSpecs = xmlWork.readXml(xmlFilePath);
             txtWork.writeTxtFile(txtAllSpecsFilePath, allSpecs);
-            // Run "starts:run" in client app to start detecting code changes
-            fileWork.invokeMaven("pom.xml", "starts:run");
         }
+        // If second or subsequent run then just grab all specs from allSpecs.txt
         else {
             allSpecs = txtWork.getLines(txtAllSpecsFilePath);
         }
@@ -150,7 +150,7 @@ public class RebuildAgentMojo extends AbstractMojo {
         // INSTALL JAR AGENT in the client plugin
         fileWork.invokeMaven(clientPomPath, "install:install-file");
 
-        // RUN starts:run in client plugin to reset state to check for differences later
+        // RUN starts:run in client plugin to reset state to check for differences the next run
 	    fileWork.invokeMaven("pom.xml", "starts:run");
     }
 
