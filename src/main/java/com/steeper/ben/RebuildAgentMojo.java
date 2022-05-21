@@ -93,11 +93,24 @@ public class RebuildAgentMojo extends AbstractMojo {
             e.printStackTrace();
         }
 
-        // 3. CREATE specListAll.txt in client plugin root dir FROM aop-ajc.xml in agents
-        // Read aop-ajc.xml file
-        // Store specs from xml tags in List<String> allSpecs
-
-        List<String> allSpecs = txtWork.getLines(txtAllSpecsFilePath);
+        // INITIALIZE: IF allSpecs.txt DOES NOT EXIST THEN THIS IS THE FIRST PLUGIN RUN
+        // "mvn clean" CAN ALSO REVERT PLUGIN BACK TO PRE-INITIALIZED STATE
+        List<String> allSpecs;
+        File f = new File(txtAllSpecsFilePath);
+        if (!f.exists()) {
+            getLog().info("FILE DOES NOT EXIST");
+            getLog().info("INITIALIZE...");
+            // Create allSpecs.txt and write allSpecs to it
+            txtWork.createTxtFile(txtAllSpecsFilePath);
+            // Write aop-ajc.xml spec strings to specListAll.txt
+            allSpecs =
+            txtWork.writeTxtFile(txtAllSpecsFilePath, allSpecs);
+            // Run "starts:run" in client app to start detecting code changes
+            fileWork.invokeMaven("pom.xml", "starts:run");
+        }
+        else {
+            allSpecs = txtWork.getLines(txtAllSpecsFilePath);
+        }
 
         HashSet<String> affectedSpecs = getAffectedSpecs(allSpecs, affectedClasses);
         List<String> specsToInclude = new ArrayList<String>();
@@ -106,20 +119,6 @@ public class RebuildAgentMojo extends AbstractMojo {
             getLog().info("log spec below!!:");
             getLog().info(spec);
             specsToInclude.add(spec);
-        }
-
-        // INITIALIZE: IF allSpecs.txt DOES NOT EXIST THEN THIS IS THE FIRST PLUGIN RUN
-        // "mvn clean" CAN ALSO REVERT PLUGIN BACK TO PRE-INITIALIZED STATE
-        File f = new File(txtAllSpecsFilePath);
-        if (!f.exists()) {
-            getLog().info("FILE DOES NOT EXIST");
-            getLog().info("INITIALIZE...");
-            // Create allSpecs.txt and write allSpecs to it
-            txtWork.createTxtFile(txtAllSpecsFilePath);
-            // Write aop-ajc.xml spec strings to specListAll.txt
-            txtWork.writeTxtFile(txtAllSpecsFilePath, allSpecs);
-            // Run "starts:run" in client app to start detecting code changes
-            fileWork.invokeMaven("pom.xml", "starts:run");
         }
 
         // First remove old xml file to replace
