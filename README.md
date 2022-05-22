@@ -1,5 +1,11 @@
+### RUN THE DOCKER FROM HW1
+`docker run -it hw1:latest`
 
-### CD INTO PARENT DIRECTORY OF CLIENT APP
+### CD INTO javamop-agent-bundle TO MAKE THE AGENT
+`cd /home/mopuser/javamop-agent-bundle`
+`bash make-agent.sh props agents quiet`
+
+### CD INTO MOPUSER
 1. `cd /home/mopuser/`
 
 ### CLONE STARTS, CLIENT APP AND RPS PLUGIN
@@ -80,5 +86,10 @@
 
 `mvn com.steeper.ben:myexample-maven-plugin:rps -DagentsPath="../javamop-agent-bundle/agents/"`
 
+### CHANGE CLASSES OF YOUR CHOICE
+### Classes App.java, App2.java, App3.java and App4.java contain variable "x" to change for testing purposes
+### Sorts.java also contains a variable that can be changed for testing purposes
+`cd toy-app/src/main/java/edu/cornell/cs6156/`
 
-
+### RUN RPS PLUGIN COMMAND FROM toy-app AGAIN
+`mvn com.steeper.ben:myexample-maven-plugin:rps -DagentsPath="../javamop-agent-bundle/agents/"`
